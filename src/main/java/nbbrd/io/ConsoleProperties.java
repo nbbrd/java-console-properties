@@ -26,6 +26,8 @@ import java.util.OptionalInt;
 import java.util.ServiceLoader;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -37,13 +39,11 @@ import javax.annotation.concurrent.ThreadSafe;
 @lombok.Builder(builderClassName = "Builder", toBuilder = true)
 public final class ConsoleProperties {
 
+    @Nonnull
     public static ConsoleProperties ofServiceLoader() {
-        List<Spi> providers = new ArrayList<>();
-        ServiceLoader.load(Spi.class).forEach(providers::add);
-        providers.sort(Comparator.comparingInt(Spi::getRank));
         return ConsoleProperties
                 .builder()
-                .providers(providers)
+                .providers(getProviders(ServiceLoader.load(Spi.class)))
                 .onUnexpectedError(ConsoleProperties::logUnexpectedError)
                 .build();
     }
@@ -54,10 +54,12 @@ public final class ConsoleProperties {
     @lombok.NonNull
     private final BiConsumer<? super String, ? super RuntimeException> onUnexpectedError;
 
+    @Nonnull
     public Optional<Charset> getStdInEncoding() {
         return getStdOutEncoding();
     }
 
+    @Nonnull
     public Optional<Charset> getStdOutEncoding() {
         return providers
                 .stream()
@@ -66,6 +68,7 @@ public final class ConsoleProperties {
                 .findFirst();
     }
 
+    @Nonnull
     public OptionalInt getColumns() {
         return providers
                 .stream()
@@ -74,6 +77,7 @@ public final class ConsoleProperties {
                 .findFirst();
     }
 
+    @Nonnull
     public OptionalInt getRows() {
         return providers
                 .stream()
@@ -119,16 +123,39 @@ public final class ConsoleProperties {
         }
     }
 
+    private static int tryGetRank(Spi o) {
+        try {
+            return o.getRank();
+        } catch (RuntimeException ex) {
+            logUnexpectedError("While calling 'getRank' on '" + o + "'", ex);
+            return Spi.UNKNOWN_RANK;
+        }
+    }
+
+    static List<Spi> getProviders(Iterable<? extends Spi> list) {
+        List<Spi> providers = new ArrayList<>();
+        for (Spi o : list) {
+            if (o != null) {
+                providers.add(o);
+            }
+        }
+        providers.sort(Comparator.comparingInt(ConsoleProperties::tryGetRank).thenComparing(o -> o.getClass().getName()));
+        return providers;
+    }
+
+    @ThreadSafe
     public interface Spi {
 
         int getRank();
 
+        @Nullable
         Charset getStdOutEncodingOrNull();
 
         int getColumns();
 
         int getRows();
 
+        static int UNKNOWN_RANK = Integer.MAX_VALUE;
         static int UNKNOWN_COLUMNS = -1;
         static int UNKNOWN_ROWS = -1;
     }
