@@ -26,22 +26,32 @@ import java.util.OptionalInt;
 import java.util.ServiceLoader;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
+ * This class allows to retrieve some console properties such as size and
+ * encoding.
  *
  * @author Philippe Charles
  */
 @ThreadSafe
-@lombok.extern.java.Log
 @lombok.Builder(builderClassName = "Builder", toBuilder = true)
 public final class ConsoleProperties {
 
+    /**
+     * Creates a new instance by getting resources from ServiceLoader.
+     *
+     * @return a new instance
+     */
     @Nonnull
     public static ConsoleProperties ofServiceLoader() {
-        return of(ServiceLoader.load(Spi.class), ConsoleProperties::logUnexpectedError);
+        return of(
+                ServiceLoader.load(Spi.class),
+                new UnexpectedErrorLogger(Logger.getLogger(ConsoleProperties.class.getName()), Level.WARNING)
+        );
     }
 
     private static ConsoleProperties of(Iterable<? extends Spi> list, BiConsumer<? super String, ? super RuntimeException> onUnexpectedError) {
@@ -58,6 +68,11 @@ public final class ConsoleProperties {
     @lombok.NonNull
     private final BiConsumer<? super String, ? super RuntimeException> onUnexpectedError;
 
+    /**
+     * Gets the encoding that the console uses to read input.
+     *
+     * @return an optional encoding
+     */
     @Nonnull
     public Optional<Charset> getStdInEncoding() {
         return providers
@@ -67,6 +82,11 @@ public final class ConsoleProperties {
                 .findFirst();
     }
 
+    /**
+     * Gets the encoding that the console uses to write output.
+     *
+     * @return an optional encoding
+     */
     @Nonnull
     public Optional<Charset> getStdOutEncoding() {
         return providers
@@ -76,6 +96,11 @@ public final class ConsoleProperties {
                 .findFirst();
     }
 
+    /**
+     * Gets the number of columns in the console.
+     *
+     * @return an optional number of columns
+     */
     @Nonnull
     public OptionalInt getColumns() {
         return providers
@@ -85,6 +110,11 @@ public final class ConsoleProperties {
                 .findFirst();
     }
 
+    /**
+     * Gets the number of rows in the console.
+     *
+     * @return an optional number of rows
+     */
     @Nonnull
     public OptionalInt getRows() {
         return providers
@@ -134,9 +164,20 @@ public final class ConsoleProperties {
         return value >= 0;
     }
 
-    private static void logUnexpectedError(String msg, RuntimeException ex) {
-        if (log.isLoggable(Level.WARNING)) {
-            log.log(Level.WARNING, msg, ex);
+    @lombok.AllArgsConstructor
+    private static final class UnexpectedErrorLogger implements BiConsumer<String, RuntimeException> {
+
+        @lombok.NonNull
+        private final Logger log;
+
+        @lombok.NonNull
+        private final Level level;
+
+        @Override
+        public void accept(String msg, RuntimeException ex) {
+            if (log.isLoggable(level)) {
+                log.log(level, msg, ex);
+            }
         }
     }
 

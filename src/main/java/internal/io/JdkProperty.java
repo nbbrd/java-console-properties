@@ -30,6 +30,7 @@ import org.openide.util.lookup.ServiceProvider;
 @lombok.AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JdkProperty implements ConsoleProperties.Spi {
 
+    @lombok.NonNull
     private final UnaryOperator<String> sys;
 
     public JdkProperty() {
