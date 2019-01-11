@@ -41,10 +41,14 @@ public final class ConsoleProperties {
 
     @Nonnull
     public static ConsoleProperties ofServiceLoader() {
+        return of(ServiceLoader.load(Spi.class), ConsoleProperties::logUnexpectedError);
+    }
+
+    private static ConsoleProperties of(Iterable<? extends Spi> list, BiConsumer<? super String, ? super RuntimeException> onUnexpectedError) {
         return ConsoleProperties
                 .builder()
-                .providers(getProviders(ServiceLoader.load(Spi.class)))
-                .onUnexpectedError(ConsoleProperties::logUnexpectedError)
+                .providers(getProviders(list, onUnexpectedError))
+                .onUnexpectedError(onUnexpectedError)
                 .build();
     }
 
@@ -136,23 +140,23 @@ public final class ConsoleProperties {
         }
     }
 
-    private static int tryGetRank(Spi o) {
+    private static int tryGetRank(Spi o, BiConsumer<? super String, ? super RuntimeException> onUnexpectedError) {
         try {
             return o.getRank();
         } catch (RuntimeException ex) {
-            logUnexpectedError("While calling 'getRank' on '" + o + "'", ex);
+            onUnexpectedError.accept("While calling 'getRank' on '" + o + "'", ex);
             return Spi.UNKNOWN_RANK;
         }
     }
 
-    static List<Spi> getProviders(Iterable<? extends Spi> list) {
+    static List<Spi> getProviders(Iterable<? extends Spi> list, BiConsumer<? super String, ? super RuntimeException> onUnexpectedError) {
         List<Spi> providers = new ArrayList<>();
         for (Spi o : list) {
             if (o != null) {
                 providers.add(o);
             }
         }
-        providers.sort(Comparator.comparingInt(ConsoleProperties::tryGetRank).thenComparing(o -> o.getClass().getName()));
+        providers.sort(Comparator.comparingInt((Spi o) -> tryGetRank(o, onUnexpectedError)).thenComparing(o -> o.getClass().getName()));
         return providers;
     }
 

@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import static nbbrd.io.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
 import static nbbrd.io.ConsoleProperties.Spi.UNKNOWN_ROWS;
@@ -35,29 +36,39 @@ public class ConsolePropertiesTest {
 
     @Test
     public void testGetProviders() {
-        assertThat(ConsoleProperties.getProviders(Arrays.asList()))
+        errorStack.clear();
+
+        assertThat(ConsoleProperties.getProviders(Arrays.asList(), errorStacker))
                 .isEmpty();
+        assertThat(errorStack).isEmpty();
 
-        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.UNKNOWN)))
+        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.UNKNOWN), errorStacker))
                 .containsExactly(Sample.UNKNOWN);
+        assertThat(errorStack).isEmpty();
 
-        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.FIRST)))
+        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.FIRST), errorStacker))
                 .containsExactly(Sample.FIRST);
+        assertThat(errorStack).isEmpty();
 
-        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.UNKNOWN, Sample.FIRST)))
+        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.UNKNOWN, Sample.FIRST), errorStacker))
                 .containsExactly(Sample.FIRST, Sample.UNKNOWN);
+        assertThat(errorStack).isEmpty();
 
-        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.FIRST, Sample.SECOND)))
+        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.FIRST, Sample.SECOND), errorStacker))
                 .containsExactly(Sample.FIRST, Sample.SECOND);
+        assertThat(errorStack).isEmpty();
 
-        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.SECOND, Sample.FIRST)))
+        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.SECOND, Sample.FIRST), errorStacker))
                 .containsExactly(Sample.FIRST, Sample.SECOND);
+        assertThat(errorStack).isEmpty();
 
-        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.FIRST, Failing.NPE)))
+        assertThat(ConsoleProperties.getProviders(Arrays.asList(Sample.FIRST, Failing.NPE), errorStacker))
                 .containsExactly(Sample.FIRST, Failing.NPE);
+        assertThat(errorStack).hasSize(1).first().isInstanceOf(NullPointerException.class);
 
-        assertThat(ConsoleProperties.getProviders(Arrays.asList(Failing.NPE, Sample.FIRST)))
+        assertThat(ConsoleProperties.getProviders(Arrays.asList(Failing.NPE, Sample.FIRST), errorStacker))
                 .containsExactly(Sample.FIRST, Failing.NPE);
+        assertThat(errorStack).hasSize(2).last().isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -177,10 +188,11 @@ public class ConsolePropertiesTest {
     }
 
     private final Queue<Exception> errorStack = new LinkedList<>();
+    private final BiConsumer<? super String, ? super RuntimeException> errorStacker = (m, e) -> errorStack.add(e);
 
     private final ConsoleProperties empty = ConsoleProperties
             .builder()
-            .onUnexpectedError((m, e) -> errorStack.add(e))
+            .onUnexpectedError(errorStacker)
             .build();
 
     private final ConsoleProperties unknown = empty
