@@ -70,22 +70,22 @@ public class ConsolePropertiesTest {
         assertThat(unknown.getStdInEncoding()).isEmpty();
         assertThat(errorStack).isEmpty();
 
-        assertThat(first.getStdInEncoding()).contains(StandardCharsets.UTF_8);
+        assertThat(first.getStdInEncoding()).contains(StandardCharsets.US_ASCII);
         assertThat(errorStack).isEmpty();
 
-        assertThat(unknownFirst.getStdInEncoding()).contains(StandardCharsets.UTF_8);
+        assertThat(unknownFirst.getStdInEncoding()).contains(StandardCharsets.US_ASCII);
         assertThat(errorStack).isEmpty();
 
-        assertThat(firstSecond.getStdInEncoding()).contains(StandardCharsets.UTF_8);
+        assertThat(firstSecond.getStdInEncoding()).contains(StandardCharsets.US_ASCII);
         assertThat(errorStack).isEmpty();
 
-        assertThat(secondFirst.getStdInEncoding()).contains(StandardCharsets.UTF_16);
+        assertThat(secondFirst.getStdInEncoding()).contains(StandardCharsets.ISO_8859_1);
         assertThat(errorStack).isEmpty();
 
-        assertThat(firstNpe.getStdInEncoding()).contains(StandardCharsets.UTF_8);
+        assertThat(firstNpe.getStdInEncoding()).contains(StandardCharsets.US_ASCII);
         assertThat(errorStack).isEmpty();
 
-        assertThat(npeFirst.getStdInEncoding()).contains(StandardCharsets.UTF_8);
+        assertThat(npeFirst.getStdInEncoding()).contains(StandardCharsets.US_ASCII);
         assertThat(errorStack).hasSize(1).first().isInstanceOf(NullPointerException.class);
     }
 
@@ -226,11 +226,12 @@ public class ConsolePropertiesTest {
     @lombok.Value
     private static final class Sample implements ConsoleProperties.Spi {
 
-        static final Sample UNKNOWN = new Sample(UNKNOWN_RANK, null, UNKNOWN_COLUMNS, UNKNOWN_ROWS);
-        static final Sample FIRST = new Sample(1, StandardCharsets.UTF_8, 120, 30);
-        static final Sample SECOND = new Sample(2, StandardCharsets.UTF_16, 40, 70);
+        static final Sample UNKNOWN = new Sample(UNKNOWN_RANK, null, null, UNKNOWN_COLUMNS, UNKNOWN_ROWS);
+        static final Sample FIRST = new Sample(1, StandardCharsets.US_ASCII, StandardCharsets.UTF_8, 120, 30);
+        static final Sample SECOND = new Sample(2, StandardCharsets.ISO_8859_1, StandardCharsets.UTF_16, 40, 70);
 
         private int rank;
+        private Charset stdInEncodingOrNull;
         private Charset stdOutEncodingOrNull;
         private int columns;
         private int rows;
@@ -245,6 +246,11 @@ public class ConsolePropertiesTest {
 
         @Override
         public int getRank() {
+            throw exception.get();
+        }
+
+        @Override
+        public Charset getStdInEncodingOrNull() {
             throw exception.get();
         }
 

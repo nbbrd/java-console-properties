@@ -56,7 +56,11 @@ public final class ConsoleProperties {
 
     @Nonnull
     public Optional<Charset> getStdInEncoding() {
-        return getStdOutEncoding();
+        return providers
+                .stream()
+                .map(this::tryGetStdInEncoding)
+                .filter(Objects::nonNull)
+                .findFirst();
     }
 
     @Nonnull
@@ -84,6 +88,15 @@ public final class ConsoleProperties {
                 .mapToInt(this::tryGetRows)
                 .filter(this::isNotNegative)
                 .findFirst();
+    }
+
+    private Charset tryGetStdInEncoding(Spi o) {
+        try {
+            return o.getStdInEncodingOrNull();
+        } catch (RuntimeException ex) {
+            onUnexpectedError.accept("While calling 'getStdInEncodingOrNull' on '" + o + "'", ex);
+            return null;
+        }
     }
 
     private Charset tryGetStdOutEncoding(Spi o) {
@@ -147,6 +160,9 @@ public final class ConsoleProperties {
     public interface Spi {
 
         int getRank();
+
+        @Nullable
+        Charset getStdInEncodingOrNull();
 
         @Nullable
         Charset getStdOutEncodingOrNull();

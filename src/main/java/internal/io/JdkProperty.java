@@ -42,9 +42,13 @@ public final class JdkProperty implements ConsoleProperties.Spi {
     }
 
     @Override
+    public Charset getStdInEncodingOrNull() {
+        return getPropertyEncodingOrNull("sun.stdout.encoding");
+    }
+
+    @Override
     public Charset getStdOutEncodingOrNull() {
-        String result = sys.apply("sun.stdout.encoding");
-        return result != null ? Charset.forName(result) : null;
+        return getPropertyEncodingOrNull("sun.stdout.encoding");
     }
 
     @Override
@@ -55,5 +59,10 @@ public final class JdkProperty implements ConsoleProperties.Spi {
     @Override
     public int getRows() {
         return UNKNOWN_ROWS;
+    }
+
+    private Charset getPropertyEncodingOrNull(String property) {
+        String result = sys.apply(property);
+        return result != null ? Charset.forName(result) : null;
     }
 }

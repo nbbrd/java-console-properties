@@ -44,10 +44,13 @@ public final class MingwXterm implements ConsoleProperties.Spi {
     }
 
     @Override
+    public Charset getStdInEncodingOrNull() {
+        return getLocaleEncodingOrNull();
+    }
+
+    @Override
     public Charset getStdOutEncodingOrNull() {
-        return Utils.isMingwXterm(sys, env)
-                ? cmd.exec("locale", "charmap").map(Charset::forName).orElse(null)
-                : null;
+        return getLocaleEncodingOrNull();
     }
 
     @Override
@@ -62,5 +65,11 @@ public final class MingwXterm implements ConsoleProperties.Spi {
         return Utils.isMingwXterm(sys, env)
                 ? cmd.exec("tput", "lines").map(Integer::valueOf).orElse(UNKNOWN_ROWS)
                 : UNKNOWN_ROWS;
+    }
+
+    private Charset getLocaleEncodingOrNull() {
+        return Utils.isMingwXterm(sys, env)
+                ? cmd.exec("locale", "charmap").map(Charset::forName).orElse(null)
+                : null;
     }
 }

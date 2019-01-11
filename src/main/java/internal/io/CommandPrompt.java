@@ -45,10 +45,13 @@ public final class CommandPrompt implements ConsoleProperties.Spi {
     }
 
     @Override
+    public Charset getStdInEncodingOrNull() {
+        return getChcpEncodingOrNull();
+    }
+
+    @Override
     public Charset getStdOutEncodingOrNull() {
-        return Utils.isWindows(sys)
-                ? cmd.exec("cmd", "/C", "chcp").map(this::parseChcp).orElse(null)
-                : null;
+        return getChcpEncodingOrNull();
     }
 
     @Override
@@ -65,11 +68,17 @@ public final class CommandPrompt implements ConsoleProperties.Spi {
                 : UNKNOWN_ROWS;
     }
 
-    private Charset parseChcp(String chcp) {
+    private Charset getChcpEncodingOrNull() {
+        return Utils.isWindows(sys)
+                ? cmd.exec("cmd", "/C", "chcp").map(CommandPrompt::parseChcp).orElse(null)
+                : null;
+    }
+
+    static Charset parseChcp(String chcp) {
         Matcher m = Pattern.compile("\\d+", Pattern.MULTILINE).matcher(chcp);
         if (m.find()) {
             return Charset.forName("cp" + m.group());
         }
-        throw new RuntimeException("Invalid chcp result: '" + chcp + "'");
+        throw new IllegalArgumentException("Invalid chcp result: '" + chcp + "'");
     }
 }
