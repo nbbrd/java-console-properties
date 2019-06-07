@@ -27,9 +27,9 @@ import java.util.ServiceLoader;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
+import net.jcip.annotations.ThreadSafe;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * This class allows to retrieve some console properties such as size and
@@ -46,7 +46,7 @@ public final class ConsoleProperties {
      *
      * @return a new instance
      */
-    @Nonnull
+    @NonNull
     public static ConsoleProperties ofServiceLoader() {
         return of(
                 ServiceLoader.load(Spi.class),
@@ -73,7 +73,7 @@ public final class ConsoleProperties {
      *
      * @return an optional encoding
      */
-    @Nonnull
+    @NonNull
     public Optional<Charset> getStdInEncoding() {
         return providers
                 .stream()
@@ -87,7 +87,7 @@ public final class ConsoleProperties {
      *
      * @return an optional encoding
      */
-    @Nonnull
+    @NonNull
     public Optional<Charset> getStdOutEncoding() {
         return providers
                 .stream()
@@ -101,7 +101,7 @@ public final class ConsoleProperties {
      *
      * @return an optional number of columns
      */
-    @Nonnull
+    @NonNull
     public OptionalInt getColumns() {
         return providers
                 .stream()
@@ -115,7 +115,7 @@ public final class ConsoleProperties {
      *
      * @return an optional number of rows
      */
-    @Nonnull
+    @NonNull
     public OptionalInt getRows() {
         return providers
                 .stream()
