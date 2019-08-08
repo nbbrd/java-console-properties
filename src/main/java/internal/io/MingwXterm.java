@@ -20,13 +20,13 @@ import java.nio.charset.Charset;
 import java.util.function.UnaryOperator;
 import lombok.AccessLevel;
 import nbbrd.io.ConsoleProperties;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = ConsoleProperties.Spi.class)
+@ServiceProvider(ConsoleProperties.Spi.class)
 @lombok.AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MingwXterm implements ConsoleProperties.Spi {
 

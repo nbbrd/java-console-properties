@@ -22,13 +22,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import nbbrd.io.ConsoleProperties;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = ConsoleProperties.Spi.class)
+@ServiceProvider(ConsoleProperties.Spi.class)
 @lombok.AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandPrompt implements ConsoleProperties.Spi {
 
