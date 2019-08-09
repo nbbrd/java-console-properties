@@ -19,7 +19,7 @@ package internal.io;
 import java.nio.charset.Charset;
 import java.util.function.UnaryOperator;
 import lombok.AccessLevel;
-import nbbrd.io.ConsoleProperties;
+import nbbrd.console.properties.ConsoleProperties;
 import nbbrd.service.ServiceProvider;
 
 /**

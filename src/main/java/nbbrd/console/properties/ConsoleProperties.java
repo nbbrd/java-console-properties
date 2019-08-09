@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package nbbrd.io;
+package nbbrd.console.properties;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;

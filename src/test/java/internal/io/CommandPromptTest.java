@@ -17,6 +17,8 @@
 package internal.io;
 
 import java.nio.charset.Charset;
+import java.util.ServiceLoader;
+import nbbrd.console.properties.ConsoleProperties;
 import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 
@@ -25,6 +27,12 @@ import org.junit.Test;
  * @author Philippe Charles
  */
 public class CommandPromptTest {
+
+    @Test
+    public void testRegistration() {
+        assertThat(ServiceLoader.load(ConsoleProperties.Spi.class))
+                .anyMatch(CommandPrompt.class::isInstance);
+    }
 
     @Test
     public void testParseChcp() {

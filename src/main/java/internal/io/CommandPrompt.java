@@ -21,7 +21,7 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
-import nbbrd.io.ConsoleProperties;
+import nbbrd.console.properties.ConsoleProperties;
 import nbbrd.service.ServiceProvider;
 
 /**

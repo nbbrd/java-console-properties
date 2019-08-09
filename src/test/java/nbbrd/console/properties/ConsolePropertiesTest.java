@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package nbbrd.io;
+package nbbrd.console.properties;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -23,8 +23,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import static nbbrd.io.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
-import static nbbrd.io.ConsoleProperties.Spi.UNKNOWN_ROWS;
+import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
+import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
 import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 
