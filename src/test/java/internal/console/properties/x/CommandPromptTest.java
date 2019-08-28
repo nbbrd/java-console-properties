@@ -14,22 +14,30 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.io;
+package internal.console.properties.x;
 
+import java.nio.charset.Charset;
 import java.util.ServiceLoader;
 import nbbrd.console.properties.ConsoleProperties;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 
 /**
  *
  * @author Philippe Charles
  */
-public class JdkPropertyTest {
+public class CommandPromptTest {
 
     @Test
     public void testRegistration() {
         assertThat(ServiceLoader.load(ConsoleProperties.Spi.class))
-                .anyMatch(JdkProperty.class::isInstance);
+                .anyMatch(CommandPrompt.class::isInstance);
+    }
+
+    @Test
+    public void testParseChcp() {
+        assertThat(CommandPrompt.parseChcp("Active code page: 437")).isEqualTo(Charset.forName("IBM437"));
+        assertThatIllegalArgumentException().isThrownBy(() -> CommandPrompt.parseChcp(""));
+        assertThatIllegalArgumentException().isThrownBy(() -> CommandPrompt.parseChcp("Active code page: "));
     }
 }

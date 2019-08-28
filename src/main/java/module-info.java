@@ -26,9 +26,9 @@ module nbbrd.console.properties {
     exports nbbrd.console.properties;
 
     provides nbbrd.console.properties.ConsoleProperties.Spi with
-            internal.io.JdkProperty,
-            internal.io.CommandPrompt,
-            internal.io.MingwXterm;
-    
+            internal.console.properties.x.JdkProperty,
+            internal.console.properties.x.CommandPrompt,
+            internal.console.properties.x.MingwXterm;
+
     uses nbbrd.console.properties.ConsoleProperties.Spi;
 }

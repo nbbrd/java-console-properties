@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.io;
+package internal.console.properties.x;
 
 import java.io.BufferedReader;
 import java.io.IOException;
