@@ -14,21 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
+package _test;
 
-module nbbrd.console.properties {
-    requires static lombok;
-    requires static nbbrd.service;
-    requires static org.checkerframework.checker.qual;
-    requires static jcip.annotations;
+/**
+ *
+ * @author Philippe Charles
+ */
+public final class CustomRuntimeException extends RuntimeException {
 
-    requires java.logging;
-
-    exports nbbrd.console.properties;
-
-    provides nbbrd.console.properties.ConsoleProperties.Spi with
-            internal.io.JdkProperty,
-            internal.io.CommandPrompt,
-            internal.io.MingwXterm;
-    
-    uses nbbrd.console.properties.ConsoleProperties.Spi;
 }

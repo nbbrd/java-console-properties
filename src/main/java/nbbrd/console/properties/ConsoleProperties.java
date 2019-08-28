@@ -16,17 +16,15 @@
  */
 package nbbrd.console.properties;
 
+import internal.console.properties.ConsolePropertiesSpiLoader;
+import internal.console.properties.ConsolePropertiesSpiProc;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.ServiceLoader;
-import java.util.function.BiConsumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 import net.jcip.annotations.ThreadSafe;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -48,25 +46,14 @@ public final class ConsoleProperties {
      */
     @NonNull
     public static ConsoleProperties ofServiceLoader() {
-        return of(
-                ServiceLoader.load(Spi.class),
-                new UnexpectedErrorLogger(Logger.getLogger(ConsoleProperties.class.getName()), Level.WARNING)
-        );
-    }
-
-    private static ConsoleProperties of(Iterable<? extends Spi> list, BiConsumer<? super String, ? super RuntimeException> onUnexpectedError) {
         return ConsoleProperties
                 .builder()
-                .providers(getProviders(list, onUnexpectedError))
-                .onUnexpectedError(onUnexpectedError)
+                .providers(new ConsolePropertiesSpiLoader().get())
                 .build();
     }
 
     @lombok.Singular
     private final List<Spi> providers;
-
-    @lombok.NonNull
-    private final BiConsumer<? super String, ? super RuntimeException> onUnexpectedError;
 
     /**
      * Gets the encoding that the console uses to read input.
@@ -77,7 +64,7 @@ public final class ConsoleProperties {
     public Optional<Charset> getStdInEncoding() {
         return providers
                 .stream()
-                .map(this::tryGetStdInEncoding)
+                .map(Spi::getStdInEncodingOrNull)
                 .filter(Objects::nonNull)
                 .findFirst();
     }
@@ -91,7 +78,7 @@ public final class ConsoleProperties {
     public Optional<Charset> getStdOutEncoding() {
         return providers
                 .stream()
-                .map(this::tryGetStdOutEncoding)
+                .map(Spi::getStdOutEncodingOrNull)
                 .filter(Objects::nonNull)
                 .findFirst();
     }
@@ -105,7 +92,7 @@ public final class ConsoleProperties {
     public OptionalInt getColumns() {
         return providers
                 .stream()
-                .mapToInt(this::tryGetColumns)
+                .mapToInt(Spi::getColumns)
                 .filter(this::isNotNegative)
                 .findFirst();
     }
@@ -119,89 +106,21 @@ public final class ConsoleProperties {
     public OptionalInt getRows() {
         return providers
                 .stream()
-                .mapToInt(this::tryGetRows)
+                .mapToInt(Spi::getRows)
                 .filter(this::isNotNegative)
                 .findFirst();
-    }
-
-    private Charset tryGetStdInEncoding(Spi o) {
-        try {
-            return o.getStdInEncodingOrNull();
-        } catch (RuntimeException ex) {
-            onUnexpectedError.accept("While calling 'getStdInEncodingOrNull' on '" + o + "'", ex);
-            return null;
-        }
-    }
-
-    private Charset tryGetStdOutEncoding(Spi o) {
-        try {
-            return o.getStdOutEncodingOrNull();
-        } catch (RuntimeException ex) {
-            onUnexpectedError.accept("While calling 'getStdOutEncodingOrNull' on '" + o + "'", ex);
-            return null;
-        }
-    }
-
-    private int tryGetColumns(Spi o) {
-        try {
-            return o.getColumns();
-        } catch (RuntimeException ex) {
-            onUnexpectedError.accept("While calling 'getColumns' on '" + o + "'", ex);
-            return Spi.UNKNOWN_COLUMNS;
-        }
-    }
-
-    private int tryGetRows(Spi o) {
-        try {
-            return o.getRows();
-        } catch (RuntimeException ex) {
-            onUnexpectedError.accept("While calling 'getRows' on '" + o + "'", ex);
-            return Spi.UNKNOWN_ROWS;
-        }
     }
 
     private boolean isNotNegative(int value) {
         return value >= 0;
     }
 
-    @lombok.AllArgsConstructor
-    private static final class UnexpectedErrorLogger implements BiConsumer<String, RuntimeException> {
-
-        @lombok.NonNull
-        private final Logger log;
-
-        @lombok.NonNull
-        private final Level level;
-
-        @Override
-        public void accept(String msg, RuntimeException ex) {
-            if (log.isLoggable(level)) {
-                log.log(level, msg, ex);
-            }
-        }
-    }
-
-    private static int tryGetRank(Spi o, BiConsumer<? super String, ? super RuntimeException> onUnexpectedError) {
-        try {
-            return o.getRank();
-        } catch (RuntimeException ex) {
-            onUnexpectedError.accept("While calling 'getRank' on '" + o + "'", ex);
-            return Spi.UNKNOWN_RANK;
-        }
-    }
-
-    static List<Spi> getProviders(Iterable<? extends Spi> list, BiConsumer<? super String, ? super RuntimeException> onUnexpectedError) {
-        List<Spi> providers = new ArrayList<>();
-        for (Spi o : list) {
-            if (o != null) {
-                providers.add(o);
-            }
-        }
-        providers.sort(Comparator.comparingInt((Spi o) -> tryGetRank(o, onUnexpectedError)).thenComparing(o -> o.getClass().getName()));
-        return providers;
-    }
-
     @ThreadSafe
+    @ServiceDefinition(
+            loaderName = "internal.console.properties.ConsolePropertiesSpiLoader",
+            quantifier = Quantifier.MULTIPLE,
+            preprocessor = ConsolePropertiesSpiProc.class
+    )
     public interface Spi {
 
         int getRank();
