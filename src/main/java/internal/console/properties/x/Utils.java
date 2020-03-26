@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.io;
+package internal.console.properties.x;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -55,8 +55,8 @@ class Utils {
     @FunctionalInterface
     interface ExternalCommand {
 
-        @Nonnull
-        Optional<String> exec(@Nonnull String... command);
+        @NonNull
+        Optional<String> exec(@NonNull String... command);
 
         static ExternalCommand getDefault() {
             return Utils::execToString;

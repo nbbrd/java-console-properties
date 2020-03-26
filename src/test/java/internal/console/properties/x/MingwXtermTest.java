@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 National Bank of Belgium
+ * Copyright 2019 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,21 +14,22 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package _demo;
+package internal.console.properties.x;
 
+import java.util.ServiceLoader;
 import nbbrd.console.properties.ConsoleProperties;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 /**
  *
  * @author Philippe Charles
  */
-public class Main {
+public class MingwXtermTest {
 
-    public static void main(String[] args) {
-        ConsoleProperties result = ConsoleProperties.ofServiceLoader();
-        System.out.println("StdInEncoding: " + result.getStdInEncoding());
-        System.out.println("StdOutEncoding: " + result.getStdOutEncoding());
-        System.out.println("Rows: " + result.getRows());
-        System.out.println("Columns: " + result.getColumns());
+    @Test
+    public void testRegistration() {
+        assertThat(ServiceLoader.load(ConsoleProperties.Spi.class))
+                .anyMatch(MingwXterm.class::isInstance);
     }
 }

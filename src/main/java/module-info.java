@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 National Bank of Belgium
+ * Copyright 2019 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,21 +14,21 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package _demo;
 
-import nbbrd.console.properties.ConsoleProperties;
+module nbbrd.console.properties {
+    requires static lombok;
+    requires static nbbrd.service;
+    requires static org.checkerframework.checker.qual;
+    requires static jcip.annotations;
 
-/**
- *
- * @author Philippe Charles
- */
-public class Main {
+    requires java.logging;
 
-    public static void main(String[] args) {
-        ConsoleProperties result = ConsoleProperties.ofServiceLoader();
-        System.out.println("StdInEncoding: " + result.getStdInEncoding());
-        System.out.println("StdOutEncoding: " + result.getStdOutEncoding());
-        System.out.println("Rows: " + result.getRows());
-        System.out.println("Columns: " + result.getColumns());
-    }
+    exports nbbrd.console.properties;
+
+    provides nbbrd.console.properties.ConsoleProperties.Spi with
+            internal.console.properties.x.JdkProperty,
+            internal.console.properties.x.CommandPrompt,
+            internal.console.properties.x.MingwXterm;
+
+    uses nbbrd.console.properties.ConsoleProperties.Spi;
 }

@@ -14,22 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.io;
-
-import java.nio.charset.Charset;
-import static org.assertj.core.api.Assertions.*;
-import org.junit.Test;
+package _test;
 
 /**
  *
  * @author Philippe Charles
  */
-public class CommandPromptTest {
+public final class CustomRuntimeException extends RuntimeException {
 
-    @Test
-    public void testParseChcp() {
-        assertThat(CommandPrompt.parseChcp("Active code page: 437")).isEqualTo(Charset.forName("IBM437"));
-        assertThatIllegalArgumentException().isThrownBy(() -> CommandPrompt.parseChcp(""));
-        assertThatIllegalArgumentException().isThrownBy(() -> CommandPrompt.parseChcp("Active code page: "));
-    }
 }

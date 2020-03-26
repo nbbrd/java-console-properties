@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 National Bank of Belgium
+ * Copyright 2019 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,21 +14,26 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package _demo;
+package _test;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import nbbrd.console.properties.ConsoleProperties;
 
 /**
  *
  * @author Philippe Charles
  */
-public class Main {
+@lombok.Value
+public final class Sample implements ConsoleProperties.Spi {
 
-    public static void main(String[] args) {
-        ConsoleProperties result = ConsoleProperties.ofServiceLoader();
-        System.out.println("StdInEncoding: " + result.getStdInEncoding());
-        System.out.println("StdOutEncoding: " + result.getStdOutEncoding());
-        System.out.println("Rows: " + result.getRows());
-        System.out.println("Columns: " + result.getColumns());
-    }
+    public static final Sample UNKNOWN = new Sample(UNKNOWN_RANK, null, null, UNKNOWN_COLUMNS, UNKNOWN_ROWS);
+    public static final Sample FIRST = new Sample(1, StandardCharsets.US_ASCII, StandardCharsets.UTF_8, 120, 30);
+    public static final Sample SECOND = new Sample(2, StandardCharsets.ISO_8859_1, StandardCharsets.UTF_16, 40, 70);
+
+    private final int rank;
+    private final Charset stdInEncodingOrNull;
+    private final Charset stdOutEncodingOrNull;
+    private final int columns;
+    private final int rows;
 }

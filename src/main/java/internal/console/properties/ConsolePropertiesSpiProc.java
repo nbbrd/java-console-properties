@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 National Bank of Belgium
+ * Copyright 2019 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,21 +14,28 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package _demo;
+package internal.console.properties;
 
+import java.util.Comparator;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import nbbrd.console.properties.ConsoleProperties;
 
 /**
  *
  * @author Philippe Charles
  */
-public class Main {
+public enum ConsolePropertiesSpiProc implements UnaryOperator<Stream<ConsoleProperties.Spi>> {
 
-    public static void main(String[] args) {
-        ConsoleProperties result = ConsoleProperties.ofServiceLoader();
-        System.out.println("StdInEncoding: " + result.getStdInEncoding());
-        System.out.println("StdOutEncoding: " + result.getStdOutEncoding());
-        System.out.println("Rows: " + result.getRows());
-        System.out.println("Columns: " + result.getColumns());
+    INSTANCE;
+
+    @Override
+    public Stream<ConsoleProperties.Spi> apply(Stream<ConsoleProperties.Spi> t) {
+        return t.map(FailsafeConsolePropertiesSpi::wrap)
+                .sorted(
+                        Comparator
+                                .comparingInt(ConsoleProperties.Spi::getRank)
+                                .thenComparing(o -> o.getClass().getName())
+                );
     }
 }

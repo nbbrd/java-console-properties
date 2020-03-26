@@ -14,56 +14,46 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.io;
+package _test;
 
 import java.nio.charset.Charset;
-import java.util.function.UnaryOperator;
-import lombok.AccessLevel;
-import nbbrd.io.ConsoleProperties;
-import org.openide.util.lookup.ServiceProvider;
+import java.util.function.Supplier;
+import nbbrd.console.properties.ConsoleProperties;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = ConsoleProperties.Spi.class)
-@lombok.AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdkProperty implements ConsoleProperties.Spi {
+@lombok.AllArgsConstructor
+public final class Failing implements ConsoleProperties.Spi {
+
+    public static final Failing NPE = new Failing(CustomRuntimeException::new);
 
     @lombok.NonNull
-    private final UnaryOperator<String> sys;
-
-    public JdkProperty() {
-        this(System::getProperty);
-    }
+    private final Supplier<? extends RuntimeException> exception;
 
     @Override
     public int getRank() {
-        return 10;
+        throw exception.get();
     }
 
     @Override
     public Charset getStdInEncodingOrNull() {
-        return getPropertyEncodingOrNull("sun.stdout.encoding");
+        throw exception.get();
     }
 
     @Override
     public Charset getStdOutEncodingOrNull() {
-        return getPropertyEncodingOrNull("sun.stdout.encoding");
+        throw exception.get();
     }
 
     @Override
     public int getColumns() {
-        return UNKNOWN_COLUMNS;
+        throw exception.get();
     }
 
     @Override
     public int getRows() {
-        return UNKNOWN_ROWS;
-    }
-
-    private Charset getPropertyEncodingOrNull(String property) {
-        String result = sys.apply(property);
-        return result != null ? Charset.forName(result) : null;
+        throw exception.get();
     }
 }
