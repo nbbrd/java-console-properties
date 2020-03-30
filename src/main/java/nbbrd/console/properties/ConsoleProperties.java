@@ -17,7 +17,7 @@
 package nbbrd.console.properties;
 
 import internal.console.properties.ConsolePropertiesSpiLoader;
-import internal.console.properties.ConsolePropertiesSpiProc;
+import internal.console.properties.FailsafeConsolePropertiesSpi;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
+import nbbrd.service.ServiceSorter;
 import net.jcip.annotations.ThreadSafe;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -119,10 +120,11 @@ public final class ConsoleProperties {
     @ServiceDefinition(
             loaderName = "internal.console.properties.ConsolePropertiesSpiLoader",
             quantifier = Quantifier.MULTIPLE,
-            preprocessor = ConsolePropertiesSpiProc.class
+            wrapper = FailsafeConsolePropertiesSpi.class
     )
     public interface Spi {
 
+        @ServiceSorter
         int getRank();
 
         @Nullable

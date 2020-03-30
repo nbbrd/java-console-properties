@@ -27,14 +27,10 @@ import nbbrd.console.properties.ConsoleProperties;
  */
 @lombok.extern.java.Log
 @lombok.AllArgsConstructor
-final class FailsafeConsolePropertiesSpi implements ConsoleProperties.Spi {
+public final class FailsafeConsolePropertiesSpi implements ConsoleProperties.Spi {
 
-    static ConsoleProperties.Spi wrap(ConsoleProperties.Spi delegate) {
+    public static ConsoleProperties.Spi wrap(ConsoleProperties.Spi delegate) {
         return new FailsafeConsolePropertiesSpi(delegate, FailsafeConsolePropertiesSpi::logUnexpectedError);
-    }
-
-    static ConsoleProperties.Spi unwrap(ConsoleProperties.Spi delegate) {
-        return delegate instanceof FailsafeConsolePropertiesSpi ? ((FailsafeConsolePropertiesSpi) delegate).delegate : delegate;
     }
 
     @lombok.NonNull
