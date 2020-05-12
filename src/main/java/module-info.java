@@ -21,9 +21,16 @@ module nbbrd.console.properties {
     requires static org.checkerframework.checker.qual;
     requires static jcip.annotations;
 
+    // optional dependencies
+    requires static info.picocli;
+    requires static nbbrd.picocsv;
+    requires static nbbrd.io.base;
+
     requires java.logging;
 
     exports nbbrd.console.properties;
+    exports nbbrd.console.picocli;
+    exports nbbrd.console.picocli.csv;
 
     provides nbbrd.console.properties.ConsoleProperties.Spi with
             internal.console.properties.x.JdkProperty,

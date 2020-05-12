@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>be.nbb.rd</groupId>
@@ -25,7 +26,7 @@
 
     <dependencies>
         <!-- compile only -->
-        <dependency>     
+        <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
             <version>3.4.0</version>
@@ -33,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.stephenc.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>            
+            <artifactId>jcip-annotations</artifactId>
             <version>1.0-1</version>
             <scope>provided</scope>
         </dependency>
@@ -47,7 +48,27 @@
             <artifactId>java-service-processor</artifactId>
             <scope>provided</scope>
         </dependency>
-                
+
+        <!-- compile and runtime -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.2.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>picocsv</artifactId>
+            <version>1.2.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-io-base</artifactId>
+            <version>0.0.6</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- test only -->
         <dependency>
             <groupId>junit</groupId>
@@ -75,7 +96,7 @@
             <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <maven.compiler.target>1.8</maven.compiler.target>
-                <maven.compiler.source>1.8</maven.compiler.source>                
+                <maven.compiler.source>1.8</maven.compiler.source>
             </properties>
             <build>
                 <plugins>
@@ -157,7 +178,7 @@
             <properties>
                 <!-- Fix NetBeans bug with test packages -->
                 <maven.compiler.target>9</maven.compiler.target>
-                <maven.compiler.source>9</maven.compiler.source>                
+                <maven.compiler.source>9</maven.compiler.source>
             </properties>
             <build>
                 <plugins>
@@ -213,11 +234,11 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>        
+                    </plugin>
                 </plugins>
             </build>
         </profile>
-        
+
         <!-- Enforce dependency rules -->
         <profile>
             <id>enforce-dependency-rules</id>
@@ -255,7 +276,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <!-- Enforce modern API -->
         <profile>
             <id>enforce-modern-api</id>
@@ -299,20 +320,20 @@
                 <plugins>
                     <plugin>
                         <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId> 
-                        <version>0.8.5</version> 
-                        <executions> 
-                            <execution> 
-                                <goals> 
-                                    <goal>prepare-agent</goal> 
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.5</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
-                            <execution> 
-                                <id>report</id> 
-                                <phase>prepare-package</phase> 
-                                <goals> 
-                                    <goal>report</goal> 
-                                </goals> 
+                            <execution>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
@@ -384,9 +405,9 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>        
+        </profile>
     </profiles>
-    
+
     <repositories>
         <repository>
             <id>oss-jfrog-artifactory-releases</id>
