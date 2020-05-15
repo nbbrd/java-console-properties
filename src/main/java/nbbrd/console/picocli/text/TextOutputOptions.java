@@ -10,7 +10,7 @@ import java.nio.file.Path;
 public class TextOutputOptions implements TextOutput {
 
     @CommandLine.Option(
-            names = {"-o", "--output-file"},
+            names = {"-o", "--output"},
             paramLabel = "<file>",
             description = "Output to a file instead of stdout."
     )

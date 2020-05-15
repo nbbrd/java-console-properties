@@ -10,7 +10,7 @@ import java.nio.file.Path;
 public class TextInputOptions implements TextInput {
 
     @CommandLine.Option(
-            names = {"-i", "--input-file"},
+            names = {"-i", "--input"},
             paramLabel = "<file>",
             description = "Output to a file instead of stdout."
     )
