@@ -28,5 +28,11 @@ public interface TextOutput {
 
         @lombok.experimental.Delegate(excludes = Closeable.class)
         private final OutputStream delegate;
+
+        @Override
+        public void close() throws IOException {
+            flush();
+            super.close();
+        }
     }
 }
