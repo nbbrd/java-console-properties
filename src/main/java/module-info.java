@@ -31,6 +31,7 @@ module nbbrd.console.properties {
     exports nbbrd.console.properties;
     exports nbbrd.console.picocli;
     exports nbbrd.console.picocli.csv;
+    exports nbbrd.console.picocli.text;
 
     provides nbbrd.console.properties.ConsoleProperties.Spi with
             internal.console.properties.x.JdkProperty,
