@@ -68,6 +68,12 @@
             <version>0.0.6</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.26</version>
+            <optional>true</optional>
+        </dependency>
 
         <!-- test only -->
         <dependency>
