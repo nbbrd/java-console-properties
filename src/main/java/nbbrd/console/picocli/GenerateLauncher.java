@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
         name = "generate-launcher",
         mixinStandardHelpOptions = true,
-        description = {"Generate launcher script for ${PARENT-COMMAND-NAME:-the parent command of this command}."},
+        description = {"Generate launcher script for ${ROOT-COMMAND-NAME:-the root command of this command}."},
         optionListHeading = "Options:%n",
         helpCommand = true
 )
