@@ -5,7 +5,7 @@
 
     <groupId>be.nbb.rd</groupId>
     <artifactId>java-console-properties</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
 
     <packaging>jar</packaging>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.6.0</version>
+            <version>3.6.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.5.0</version>
+            <version>4.5.1</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -65,13 +65,13 @@
         <dependency>
             <groupId>be.nbb.rd</groupId>
             <artifactId>java-io-base</artifactId>
-            <version>0.0.6</version>
+            <version>0.0.7</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.26</version>
+            <version>1.27</version>
             <optional>true</optional>
         </dependency>
 
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.16.1</version>
+            <version>3.17.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -321,13 +321,14 @@
                 <property>
                     <name>!skipEnforceCodeCoverage</name>
                 </property>
+                <jdk>(,11]</jdk>
             </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.5</version>
+                        <version>0.8.6</version>
                         <executions>
                             <execution>
                                 <goals>

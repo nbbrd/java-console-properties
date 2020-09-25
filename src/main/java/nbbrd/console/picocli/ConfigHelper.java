@@ -45,7 +45,7 @@ public class ConfigHelper {
         switch (scope) {
             case SYSTEM: {
                 Path sibling = selectMainJar(system.getClassPath());
-                return sibling != null ? sibling.getParent().resolve(getConfigFileName()) : null;
+                return sibling != null ? sibling.toAbsolutePath().getParent().resolve(getConfigFileName()) : null;
             }
             case GLOBAL: {
                 Path parent = system.getUserHome();
