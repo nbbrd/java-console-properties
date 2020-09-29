@@ -5,9 +5,6 @@ import nbbrd.picocsv.Csv;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public interface CsvOutput extends TextOutput {
 
@@ -30,7 +27,7 @@ public interface CsvOutput extends TextOutput {
         return Csv.Writer.of(charWriter, toFormat());
     }
 
-    default Csv.Writer newCsvWriter(Supplier<Optional<Charset>> stdOutEncoding) throws IOException {
-        return newCsvWriter(newCharWriter(stdOutEncoding));
+    default Csv.Writer newCsvWriter() throws IOException {
+        return newCsvWriter(newCharWriter());
     }
 }

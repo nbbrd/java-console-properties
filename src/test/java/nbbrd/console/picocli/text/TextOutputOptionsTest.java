@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,36 +41,48 @@ public class TextOutputOptionsTest {
     }
 
     @Test
-    public void testNewCharWriter() throws IOException {
-        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            ByteArrayOutputStream stdOut = new ByteArrayOutputStream();
+    public void testNewCharWriterOfStdOut() throws IOException {
+        ByteArrayOutputStream stdOut = new ByteArrayOutputStream();
+        AtomicReference<Charset> stdOutEncoding = new AtomicReference<>(StandardCharsets.UTF_8);
 
-            TextOutputOptions options = new TextOutputOptions() {
-                @Override
-                public OutputStream newStandardOutputStream() {
-                    return new UncloseableOutputStream(stdOut);
-                }
-            };
-
-            options.setFile(null);
-            for (boolean append : new boolean[]{false, true}) {
-                for (Charset encoding : new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8}) {
-                    options.setAppend(append);
-                    options.setEncoding(null);
-
-                    try (Writer charWriter = options.newCharWriter(() -> Optional.of(encoding))) {
-                        charWriter.write("hello");
-                    }
-                    assertThat(stdOut.toByteArray()).asString(encoding).isEqualTo("hello");
-
-                    try (Writer charWriter = options.newCharWriter(() -> Optional.of(encoding))) {
-                        charWriter.write(" world");
-                    }
-                    assertThat(stdOut.toByteArray()).asString(encoding).isEqualTo("hello world");
-
-                    stdOut.reset();
-                }
+        TextOutputOptions options = new TextOutputOptions() {
+            @Override
+            public OutputStream getStdOutStream() {
+                return stdOut;
             }
+
+            @Override
+            public Charset getStdOutEncoding() {
+                return stdOutEncoding.get();
+            }
+        };
+
+        options.setFile(null);
+        for (boolean append : new boolean[]{false, true}) {
+            for (Charset encoding : new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8}) {
+                options.setAppend(append);
+                options.setEncoding(null);
+                stdOutEncoding.set(encoding);
+
+                try (Writer charWriter = options.newCharWriter()) {
+                    charWriter.write("hello");
+                }
+                assertThat(stdOut.toByteArray()).asString(encoding).isEqualTo("hello");
+
+                try (Writer charWriter = options.newCharWriter()) {
+                    charWriter.write(" world");
+                }
+                assertThat(stdOut.toByteArray()).asString(encoding).isEqualTo("hello world");
+
+                stdOut.reset();
+            }
+        }
+    }
+
+    @Test
+    public void testNewCharWriterOfFile() throws IOException {
+        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
+            TextOutputOptions options = new TextOutputOptions();
 
             options.setFile(fs.getPath("/file.txt"));
             for (boolean append : new boolean[]{false, true}) {
@@ -78,13 +90,13 @@ public class TextOutputOptionsTest {
                     options.setAppend(append);
                     options.setEncoding(encoding);
 
-                    try (Writer charWriter = options.newCharWriter(Optional::empty)) {
-                        charWriter.write("hello");
+                    try (Writer writer = options.newCharWriter()) {
+                        writer.write("hello");
                     }
                     assertThat(options.getFile()).exists().hasContent("hello");
 
-                    try (Writer charWriter = options.newCharWriter(Optional::empty)) {
-                        charWriter.write(" world");
+                    try (Writer writer = options.newCharWriter()) {
+                        writer.write(" world");
                     }
                     assertThat(options.getFile()).exists().hasContent(append ? "hello world" : " world");
 

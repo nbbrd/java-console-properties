@@ -1,7 +1,6 @@
 package nbbrd.console.picocli;
 
 import nbbrd.console.picocli.text.TextOutput;
-import nbbrd.console.properties.ConsoleProperties;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(
@@ -43,7 +41,7 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
     @Override
     public Void call() throws IOException {
         String executableJar = getExecutableJar();
-        try (Writer w = newCharWriter(this::getStdOutEncoding)) {
+        try (Writer w = newCharWriter()) {
             getType().append(w, executableJar);
         }
         return null;
@@ -61,10 +59,6 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
     @Override
     public boolean isAppend() {
         return false;
-    }
-
-    private Optional<Charset> getStdOutEncoding() {
-        return ConsoleProperties.ofServiceLoader().getStdOutEncoding();
     }
 
     @lombok.AllArgsConstructor

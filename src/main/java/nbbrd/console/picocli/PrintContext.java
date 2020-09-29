@@ -17,13 +17,10 @@
 package nbbrd.console.picocli;
 
 import nbbrd.console.picocli.yaml.YamlOutputOptions;
-import nbbrd.console.properties.ConsoleProperties;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import picocli.CommandLine;
 
-import java.nio.charset.Charset;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -55,7 +52,7 @@ public class PrintContext implements Callable<Void> {
 
     @Override
     public Void call() throws Exception {
-        output.dump(getYaml(), getType().get(), this::getStdOutEncoding);
+        output.dump(getYaml(), getType().get());
         return null;
     }
 
@@ -63,10 +60,6 @@ public class PrintContext implements Callable<Void> {
         DumperOptions opts = new DumperOptions();
         opts.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         return new Yaml(opts);
-    }
-
-    private Optional<Charset> getStdOutEncoding() {
-        return ConsoleProperties.ofServiceLoader().getStdOutEncoding();
     }
 
     public enum ContextType implements Supplier<Object> {

@@ -5,9 +5,6 @@ import nbbrd.picocsv.Csv;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public interface CsvInput extends TextInput {
 
@@ -34,7 +31,7 @@ public interface CsvInput extends TextInput {
         return Csv.Reader.of(charReader, toFormat(), toParsing());
     }
 
-    default Csv.Reader newCsvReader(Supplier<Optional<Charset>> stdInEncoding) throws IOException {
-        return newCsvReader(newCharReader(stdInEncoding));
+    default Csv.Reader newCsvReader() throws IOException {
+        return newCsvReader(newCharReader());
     }
 }
