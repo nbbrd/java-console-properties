@@ -8,8 +8,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.*;
 
 public interface TextOutput {
 
@@ -17,14 +16,28 @@ public interface TextOutput {
 
     Charset getEncoding();
 
+    boolean isAppend();
+
+    default boolean hasFile() {
+        return getFile() != null;
+    }
+
     default Writer newCharWriter(Supplier<Optional<Charset>> stdOutEncoding) throws IOException {
-        return getFile() != null
-                ? new OutputStreamWriter(Files.newOutputStream(getFile(), CREATE, TRUNCATE_EXISTING), getEncoding())
-                : new OutputStreamWriter(new UncloseableOutputStream(System.out), stdOutEncoding.get().orElse(UTF_8));
+        return hasFile()
+                ? new OutputStreamWriter(Files.newOutputStream(getFile(), CREATE, isAppend() ? APPEND : TRUNCATE_EXISTING), getEncoding())
+                : new OutputStreamWriter(newStandardOutputStream(), stdOutEncoding.get().orElse(UTF_8));
+    }
+
+    default boolean isAppending() throws IOException {
+        return hasFile() && isAppend() && Files.exists(getFile()) && Files.size(getFile()) > 0;
+    }
+
+    default OutputStream newStandardOutputStream() {
+        return new UncloseableOutputStream(System.out);
     }
 
     @lombok.AllArgsConstructor
-    static final class UncloseableOutputStream extends OutputStream {
+    final class UncloseableOutputStream extends OutputStream {
 
         @lombok.experimental.Delegate(excludes = Closeable.class)
         private final OutputStream delegate;

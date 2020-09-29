@@ -58,6 +58,11 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
         return getType().charset;
     }
 
+    @Override
+    public boolean isAppend() {
+        return false;
+    }
+
     private Optional<Charset> getStdOutEncoding() {
         return ConsoleProperties.ofServiceLoader().getStdOutEncoding();
     }
