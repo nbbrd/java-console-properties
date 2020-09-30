@@ -1,15 +1,19 @@
 package nbbrd.console.picocli;
 
 import nbbrd.console.picocli.text.TextOutput;
+import nbbrd.console.properties.ConsoleProperties;
 import picocli.CommandLine;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @CommandLine.Command(
         name = "generate-launcher",
@@ -81,6 +85,19 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
         return false;
     }
 
+    @Override
+    public OutputStream getStdOutStream() {
+        return System.out;
+    }
+
+    @Override
+    public Charset getStdOutEncoding() {
+        return ConsoleProperties
+                .ofServiceLoader()
+                .getStdOutEncoding()
+                .orElse(UTF_8);
+    }
+    
     @lombok.AllArgsConstructor
     public enum LauncherType {
         BASH(StandardCharsets.US_ASCII) {

@@ -1,10 +1,14 @@
 package nbbrd.console.picocli.text;
 
 import nbbrd.console.picocli.StandardCharsetCandidates;
+import nbbrd.console.properties.ConsoleProperties;
 import picocli.CommandLine;
 
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @lombok.Data
 public class TextOutputOptions implements TextOutput {
@@ -38,4 +42,17 @@ public class TextOutputOptions implements TextOutput {
             defaultValue = "UTF-8"
     )
     private Charset encoding;
+
+    @Override
+    public OutputStream getStdOutStream() {
+        return System.out;
+    }
+
+    @Override
+    public Charset getStdOutEncoding() {
+        return ConsoleProperties
+                .ofServiceLoader()
+                .getStdOutEncoding()
+                .orElse(UTF_8);
+    }
 }

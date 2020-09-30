@@ -1,14 +1,11 @@
 package nbbrd.console.picocli.text;
 
-import nbbrd.console.properties.ConsoleProperties;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.zip.GZIPInputStream;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public interface TextInput {
 
@@ -18,24 +15,36 @@ public interface TextInput {
 
     Charset getEncoding();
 
+    InputStream getStdInStream();
+
+    Charset getStdInEncoding();
+
     default Reader newCharReader() throws IOException {
         if (hasFile()) {
             InputStream stream = Files.newInputStream(getFile());
-            return new InputStreamReader(isGzipped() ? new GZIPInputStream(stream) : stream, getEncoding());
+            return new InputStreamReader(isGzippedFile() ? new GZIPInputStream(stream) : stream, getEncoding());
         }
         return new InputStreamReader(new UncloseableInputStream(getStdInStream()), getStdInEncoding());
+    }
+
+    default String readString() throws IOException {
+        try (Reader reader = newCharReader()) {
+            StringBuilder result = new StringBuilder();
+            char[] buffer = new char[8 * 1024];
+            int readCount = 0;
+            while ((readCount = reader.read(buffer)) != -1) {
+                result.append(buffer, 0, readCount);
+            }
+            return result.toString();
+        }
     }
 
     default boolean hasFile() {
         return getFile() != null;
     }
 
-    default InputStream getStdInStream() {
-        return System.in;
-    }
-
-    default Charset getStdInEncoding() {
-        return ConsoleProperties.ofServiceLoader().getStdInEncoding().orElse(UTF_8);
+    default boolean isGzippedFile() {
+        return hasFile() && (isGzipped() || getFile().toString().toLowerCase(Locale.ROOT).endsWith(".gz"));
     }
 
     @lombok.AllArgsConstructor

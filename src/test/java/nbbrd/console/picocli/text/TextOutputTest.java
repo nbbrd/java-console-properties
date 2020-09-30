@@ -11,13 +11,12 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TextOutputOptionsTest {
+public class TextOutputTest {
 
     @Test
     public void testIsAppending() throws IOException {
@@ -42,44 +41,31 @@ public class TextOutputOptionsTest {
 
     @Test
     public void testNewCharWriterOfStdOut() throws IOException {
-        ByteArrayOutputStream stdOutStream = new ByteArrayOutputStream();
-        AtomicReference<Charset> stdOutEncoding = new AtomicReference<>(StandardCharsets.UTF_8);
+        MockedTextOutput output = new MockedTextOutput();
+        output.setStdOutStream(new ByteArrayOutputStream());
+        output.setFile(null);
 
-        TextOutputOptions options = new TextOutputOptions() {
-            @Override
-            public OutputStream getStdOutStream() {
-                return stdOutStream;
-            }
-
-            @Override
-            public Charset getStdOutEncoding() {
-                return stdOutEncoding.get();
-            }
-        };
-
-        options.setFile(null);
         for (boolean append : getBooleans()) {
             for (boolean gzipped : getBooleans()) {
                 for (Charset encoding : getCharsets()) {
-                    options.setAppend(append);
-                    options.setGzipped(gzipped);
-                    options.setEncoding(encoding);
+                    output.setAppend(append);
+                    output.setGzipped(gzipped);
+                    output.setEncoding(null);
+                    output.setStdOutEncoding(encoding);
 
-                    stdOutEncoding.set(encoding);
-
-                    write(options, "hello");
-                    assertThat(stdOutStream.toByteArray())
+                    output.writeString("hello");
+                    assertThat(output.getStdOutStream().toByteArray())
                             .describedAs("First append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
                             .asString(encoding)
                             .isEqualTo("hello");
 
-                    write(options, " world");
-                    assertThat(stdOutStream.toByteArray())
+                    output.writeString(" world");
+                    assertThat(output.getStdOutStream().toByteArray())
                             .describedAs("Second append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
                             .asString(encoding)
                             .isEqualTo("hello world");
 
-                    stdOutStream.reset();
+                    output.getStdOutStream().reset();
                 }
             }
         }
@@ -88,37 +74,80 @@ public class TextOutputOptionsTest {
     @Test
     public void testNewCharWriterOfFile() throws IOException {
         try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            TextOutputOptions options = new TextOutputOptions();
+            MockedTextOutput output = new MockedTextOutput();
+            output.setStdOutStream(null);
+            output.setFile(fs.getPath("/file.txt"));
 
-            options.setFile(fs.getPath("/file.txt"));
             for (boolean append : getBooleans()) {
                 for (boolean gzipped : getBooleans()) {
                     for (Charset encoding : getCharsets()) {
-                        options.setAppend(append);
-                        options.setGzipped(gzipped);
-                        options.setEncoding(encoding);
+                        output.setAppend(append);
+                        output.setGzipped(gzipped);
+                        output.setEncoding(encoding);
+                        output.setStdOutEncoding(null);
 
-                        write(options, "hello");
-                        assertThat(options.getFile())
+                        output.writeString("hello");
+                        assertThat(output.getFile())
                                 .describedAs("First append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
                                 .exists()
                                 .extracting(file -> read(file, encoding, gzipped))
                                 .asString()
                                 .isEqualTo("hello");
 
-                        write(options, " world");
-                        assertThat(options.getFile())
+                        output.writeString(" world");
+                        assertThat(output.getFile())
                                 .describedAs("Second append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
                                 .exists()
                                 .extracting(file -> read(file, encoding, gzipped))
                                 .asString()
                                 .isEqualTo(append ? "hello world" : " world");
 
-                        Files.delete(options.getFile());
+                        Files.delete(output.getFile());
                     }
                 }
             }
         }
+    }
+
+    @Test
+    public void testIsGzippedFile() throws IOException {
+        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
+            MockedTextOutput output = new MockedTextOutput();
+
+            output.setGzipped(false);
+            output.setFile(null);
+            assertThat(output.isGzippedFile()).isFalse();
+
+            output.setGzipped(true);
+            output.setFile(null);
+            assertThat(output.isGzippedFile()).isFalse();
+
+            output.setGzipped(false);
+            output.setFile(fs.getPath("/file.txt"));
+            assertThat(output.isGzippedFile()).isFalse();
+
+            output.setGzipped(false);
+            output.setFile(fs.getPath("/file.txt.gz"));
+            assertThat(output.isGzippedFile()).isTrue();
+
+            output.setGzipped(true);
+            output.setFile(fs.getPath("/file.txt"));
+            assertThat(output.isGzippedFile()).isTrue();
+
+            output.setGzipped(true);
+            output.setFile(fs.getPath("/file.txt.gz"));
+            assertThat(output.isGzippedFile()).isTrue();
+        }
+    }
+
+    @lombok.Data
+    private static final class MockedTextOutput implements TextOutput {
+        Path file;
+        boolean gzipped;
+        boolean append;
+        Charset encoding;
+        ByteArrayOutputStream stdOutStream;
+        Charset stdOutEncoding;
     }
 
     private boolean[] getBooleans() {
@@ -127,12 +156,6 @@ public class TextOutputOptionsTest {
 
     private Charset[] getCharsets() {
         return new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8};
-    }
-
-    private static void write(TextOutputOptions options, String content) throws IOException {
-        try (Writer writer = options.newCharWriter()) {
-            writer.write(content);
-        }
     }
 
     private static String read(Path file, Charset encoding, boolean compressed) {
