@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.zip.GZIPOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.*;
@@ -14,14 +15,18 @@ public interface TextOutput {
 
     Path getFile();
 
-    Charset getEncoding();
+    boolean isGzipped();
 
     boolean isAppend();
 
+    Charset getEncoding();
+
     default Writer newCharWriter() throws IOException {
-        return hasFile()
-                ? new OutputStreamWriter(Files.newOutputStream(getFile(), CREATE, isAppend() ? APPEND : TRUNCATE_EXISTING), getEncoding())
-                : new OutputStreamWriter(new UncloseableOutputStream(getStdOutStream()), getStdOutEncoding());
+        if (hasFile()) {
+            OutputStream stream = Files.newOutputStream(getFile(), CREATE, isAppend() ? APPEND : TRUNCATE_EXISTING);
+            return new OutputStreamWriter(isGzipped() ? new GZIPOutputStream(stream) : stream, getEncoding());
+        }
+        return new OutputStreamWriter(new UncloseableOutputStream(getStdOutStream()), getStdOutEncoding());
     }
 
     default boolean hasFile() {

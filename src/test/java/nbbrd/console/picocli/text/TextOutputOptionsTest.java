@@ -4,16 +4,16 @@ import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,13 +42,13 @@ public class TextOutputOptionsTest {
 
     @Test
     public void testNewCharWriterOfStdOut() throws IOException {
-        ByteArrayOutputStream stdOut = new ByteArrayOutputStream();
+        ByteArrayOutputStream stdOutStream = new ByteArrayOutputStream();
         AtomicReference<Charset> stdOutEncoding = new AtomicReference<>(StandardCharsets.UTF_8);
 
         TextOutputOptions options = new TextOutputOptions() {
             @Override
             public OutputStream getStdOutStream() {
-                return stdOut;
+                return stdOutStream;
             }
 
             @Override
@@ -58,23 +58,29 @@ public class TextOutputOptionsTest {
         };
 
         options.setFile(null);
-        for (boolean append : new boolean[]{false, true}) {
-            for (Charset encoding : new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8}) {
-                options.setAppend(append);
-                options.setEncoding(null);
-                stdOutEncoding.set(encoding);
+        for (boolean append : getBooleans()) {
+            for (boolean gzipped : getBooleans()) {
+                for (Charset encoding : getCharsets()) {
+                    options.setAppend(append);
+                    options.setGzipped(gzipped);
+                    options.setEncoding(encoding);
 
-                try (Writer charWriter = options.newCharWriter()) {
-                    charWriter.write("hello");
+                    stdOutEncoding.set(encoding);
+
+                    write(options, "hello");
+                    assertThat(stdOutStream.toByteArray())
+                            .describedAs("First append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
+                            .asString(encoding)
+                            .isEqualTo("hello");
+
+                    write(options, " world");
+                    assertThat(stdOutStream.toByteArray())
+                            .describedAs("Second append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
+                            .asString(encoding)
+                            .isEqualTo("hello world");
+
+                    stdOutStream.reset();
                 }
-                assertThat(stdOut.toByteArray()).asString(encoding).isEqualTo("hello");
-
-                try (Writer charWriter = options.newCharWriter()) {
-                    charWriter.write(" world");
-                }
-                assertThat(stdOut.toByteArray()).asString(encoding).isEqualTo("hello world");
-
-                stdOut.reset();
             }
         }
     }
@@ -85,24 +91,63 @@ public class TextOutputOptionsTest {
             TextOutputOptions options = new TextOutputOptions();
 
             options.setFile(fs.getPath("/file.txt"));
-            for (boolean append : new boolean[]{false, true}) {
-                for (Charset encoding : new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8}) {
-                    options.setAppend(append);
-                    options.setEncoding(encoding);
+            for (boolean append : getBooleans()) {
+                for (boolean gzipped : getBooleans()) {
+                    for (Charset encoding : getCharsets()) {
+                        options.setAppend(append);
+                        options.setGzipped(gzipped);
+                        options.setEncoding(encoding);
 
-                    try (Writer writer = options.newCharWriter()) {
-                        writer.write("hello");
+                        write(options, "hello");
+                        assertThat(options.getFile())
+                                .describedAs("First append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
+                                .exists()
+                                .extracting(file -> read(file, encoding, gzipped))
+                                .asString()
+                                .isEqualTo("hello");
+
+                        write(options, " world");
+                        assertThat(options.getFile())
+                                .describedAs("Second append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
+                                .exists()
+                                .extracting(file -> read(file, encoding, gzipped))
+                                .asString()
+                                .isEqualTo(append ? "hello world" : " world");
+
+                        Files.delete(options.getFile());
                     }
-                    assertThat(options.getFile()).exists().hasContent("hello");
-
-                    try (Writer writer = options.newCharWriter()) {
-                        writer.write(" world");
-                    }
-                    assertThat(options.getFile()).exists().hasContent(append ? "hello world" : " world");
-
-                    Files.delete(options.getFile());
                 }
             }
+        }
+    }
+
+    private boolean[] getBooleans() {
+        return new boolean[]{false, true};
+    }
+
+    private Charset[] getCharsets() {
+        return new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8};
+    }
+
+    private static void write(TextOutputOptions options, String content) throws IOException {
+        try (Writer writer = options.newCharWriter()) {
+            writer.write(content);
+        }
+    }
+
+    private static String read(Path file, Charset encoding, boolean compressed) {
+        try {
+            if (!compressed) {
+                return Files.readAllLines(file, encoding).stream().collect(Collectors.joining(System.lineSeparator()));
+            } else {
+                try (GZIPInputStream gzip = new GZIPInputStream(Files.newInputStream(file))) {
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(gzip, encoding))) {
+                        return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
         }
     }
 }

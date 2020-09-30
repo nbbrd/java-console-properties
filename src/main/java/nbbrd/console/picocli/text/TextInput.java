@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.zip.GZIPInputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -13,12 +14,16 @@ public interface TextInput {
 
     Path getFile();
 
+    boolean isGzipped();
+
     Charset getEncoding();
 
     default Reader newCharReader() throws IOException {
-        return hasFile()
-                ? new InputStreamReader(Files.newInputStream(getFile()), getEncoding())
-                : new InputStreamReader(new UncloseableInputStream(getStdInStream()), getStdInEncoding());
+        if (hasFile()) {
+            InputStream stream = Files.newInputStream(getFile());
+            return new InputStreamReader(isGzipped() ? new GZIPInputStream(stream) : stream, getEncoding());
+        }
+        return new InputStreamReader(new UncloseableInputStream(getStdInStream()), getStdInEncoding());
     }
 
     default boolean hasFile() {

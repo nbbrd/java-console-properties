@@ -76,6 +76,11 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
         return false;
     }
 
+    @Override
+    public boolean isGzipped() {
+        return false;
+    }
+
     @lombok.AllArgsConstructor
     public enum LauncherType {
         BASH(StandardCharsets.US_ASCII) {

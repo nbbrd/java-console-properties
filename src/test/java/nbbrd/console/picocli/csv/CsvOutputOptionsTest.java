@@ -19,7 +19,6 @@ public class CsvOutputOptionsTest {
         options.setDelimiter(Csv.Format.RFC4180.getDelimiter());
         options.setQuote(Csv.Format.RFC4180.getQuote());
 
-
         try (StringWriter content = new StringWriter()) {
             try (Csv.Writer writer = options.newCsvWriter(content)) {
             }

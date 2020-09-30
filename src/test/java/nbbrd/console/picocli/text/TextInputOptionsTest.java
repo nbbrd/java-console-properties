@@ -4,17 +4,16 @@ import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPOutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
@@ -39,15 +38,17 @@ public class TextInputOptionsTest {
         };
 
         options.setFile(null);
-        for (Charset encoding : new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8}) {
-            options.setEncoding(null);
-            stdInEncoding.set(encoding);
+        for (boolean gzipped : getBooleans()) {
+            for (Charset encoding : getCharsets()) {
+                options.setGzipped(gzipped);
+                options.setEncoding(encoding);
 
-            try (BufferedReader reader = new BufferedReader(options.newCharReader())) {
-                assertThat(reader.lines().collect(Collectors.joining())).isEqualTo("hello");
+                stdInEncoding.set(encoding);
+
+                assertThat(read(options)).isEqualTo("hello");
+
+                stdInStream.reset();
             }
-
-            stdInStream.reset();
         }
     }
 
@@ -57,18 +58,45 @@ public class TextInputOptionsTest {
             TextInputOptions options = new TextInputOptions();
 
             options.setFile(fs.getPath("/file.txt"));
-            for (Charset encoding : new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8}) {
-                options.setEncoding(encoding);
+            for (boolean gzipped : getBooleans()) {
+                for (Charset encoding : getCharsets()) {
+                    options.setGzipped(gzipped);
+                    options.setEncoding(encoding);
 
-                assertThatIOException().isThrownBy(options::newCharReader);
+                    assertThatIOException().isThrownBy(options::newCharReader);
 
-                Files.write(options.getFile(), Collections.singletonList("hello"));
-                try (BufferedReader reader = new BufferedReader(options.newCharReader())) {
-                    assertThat(reader.lines().collect(Collectors.joining())).isEqualTo("hello");
+                    write(options.getFile(), encoding, gzipped, "hello");
+                    assertThat(read(options)).isEqualTo("hello");
+
+                    Files.delete(options.getFile());
                 }
-
-                Files.delete(options.getFile());
             }
+        }
+    }
+
+    private boolean[] getBooleans() {
+        return new boolean[]{false, true};
+    }
+
+    private Charset[] getCharsets() {
+        return new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8};
+    }
+
+    private static void write(Path file, Charset encoding, boolean compressed, String content) throws IOException {
+        if (!compressed) {
+            Files.write(file, Collections.singletonList(content));
+        } else {
+            try (GZIPOutputStream gzip = new GZIPOutputStream(Files.newOutputStream(file))) {
+                try (Writer writer = new OutputStreamWriter(gzip, encoding)) {
+                    writer.append(content);
+                }
+            }
+        }
+    }
+
+    private static String read(TextInputOptions options) throws IOException {
+        try (BufferedReader reader = new BufferedReader(options.newCharReader())) {
+            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
         }
     }
 }

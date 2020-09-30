@@ -17,8 +17,15 @@ public class TextOutputOptions implements TextOutput {
     private Path file;
 
     @CommandLine.Option(
+            names = {"-z", "--gzipped"},
+            description = "Compress the output file with gzip.",
+            defaultValue = "false"
+    )
+    private boolean gzipped;
+
+    @CommandLine.Option(
             names = {"--append"},
-            description = "Append to the end of the specified file.",
+            description = "Append to the end of the output file.",
             defaultValue = "false"
     )
     private boolean append;

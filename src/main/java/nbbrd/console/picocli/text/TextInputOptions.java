@@ -17,6 +17,13 @@ public class TextInputOptions implements TextInput {
     private Path file;
 
     @CommandLine.Option(
+            names = {"-z", "--gzipped"},
+            description = "Uncompress the output file with gzip.",
+            defaultValue = "false"
+    )
+    private boolean gzipped;
+
+    @CommandLine.Option(
             names = {"-e", "--encoding"},
             paramLabel = "<encoding>",
             description = "Charset used to encode text.",
