@@ -17,6 +17,13 @@ public class TextOutputOptions implements TextOutput {
     private Path file;
 
     @CommandLine.Option(
+            names = {"--append"},
+            description = "Append to the end of the specified file.",
+            defaultValue = "false"
+    )
+    private boolean append;
+
+    @CommandLine.Option(
             names = {"-e", "--encoding"},
             paramLabel = "<encoding>",
             description = "Charset used to encode text.",
@@ -24,11 +31,4 @@ public class TextOutputOptions implements TextOutput {
             defaultValue = "UTF-8"
     )
     private Charset encoding;
-
-    @CommandLine.Option(
-            names = {"--append"},
-            description = "Append to the end of specified file instead of truncating.",
-            defaultValue = "false"
-    )
-    private boolean append;
 }
