@@ -12,6 +12,8 @@ public interface CsvInput extends TextInput {
 
     Csv.NewLine getSeparator();
 
+    boolean isLenientSeparator();
+
     char getQuote();
 
     default Csv.Format toFormat() {
@@ -24,7 +26,7 @@ public interface CsvInput extends TextInput {
     }
 
     default Csv.Parsing toParsing() {
-        return Csv.Parsing.STRICT;
+        return isLenientSeparator() ? Csv.Parsing.LENIENT : Csv.Parsing.STRICT;
     }
 
     default Csv.Reader newCsvReader(Reader charReader) throws IOException {

@@ -24,6 +24,13 @@ public class CsvInputOptions extends TextInputOptions implements CsvInput {
     private Csv.NewLine separator;
 
     @CommandLine.Option(
+            names = {"-l", "--lenient-line"},
+            description = "Determine if NewLine is parsed leniently or not.",
+            defaultValue = "false"
+    )
+    private boolean lenientSeparator;
+
+    @CommandLine.Option(
             names = {"-q", "--quote"},
             paramLabel = "<char>",
             description = "Quoting character.",
