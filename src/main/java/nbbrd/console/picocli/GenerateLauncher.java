@@ -80,28 +80,46 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
     public enum LauncherType {
         BASH(StandardCharsets.US_ASCII) {
             @Override
-            void append(Writer w, Path javaBin, Path executableJar) throws IOException {
+            void append(Writer w, String java, String jar) throws IOException {
                 w.append("#!/bin/sh\n")
-                        .append(optionalPathToString(javaBin))
+                        .append(java)
                         .append(" -jar \"")
-                        .append(optionalPathToString(executableJar))
+                        .append(jar)
                         .append("\" \"$@\"");
             }
         },
         CMD(StandardCharsets.US_ASCII) {
             @Override
-            void append(Writer w, Path javaBin, Path executableJar) throws IOException {
+            void append(Writer w, String java, String jar) throws IOException {
                 w.append("@")
-                        .append(optionalPathToString(javaBin))
+                        .append(java)
                         .append(" -jar \"")
-                        .append(optionalPathToString(executableJar))
+                        .append(jar)
                         .append("\" %*");
+            }
+        },
+        PS1(StandardCharsets.UTF_8) {
+            @Override
+            void append(Writer w, String java, String jar) throws IOException {
+                w.append("if($myinvocation.expectingInput) { $input | & ")
+                        .append(java)
+                        .append(" -jar \"")
+                        .append(jar)
+                        .append("\" @args } else { & ")
+                        .append(java)
+                        .append(" -jar \"")
+                        .append(jar)
+                        .append("\" @args }");
             }
         };
 
         private final Charset charset;
 
-        abstract void append(Writer w, Path javaBin, Path classPath) throws IOException;
+        abstract void append(Writer w, String java, String jar) throws IOException;
+
+        public void append(Writer w, Path javaBin, Path classPath) throws IOException {
+            append(w, optionalPathToString(javaBin), optionalPathToString(classPath));
+        }
 
         static String optionalPathToString(Path path) {
             return path != null ? path.toString() : "";
