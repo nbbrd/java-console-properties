@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 @CommandLine.Command(
         name = "generate-launcher",
@@ -18,6 +19,9 @@ import java.util.concurrent.Callable;
         helpCommand = true
 )
 public class GenerateLauncher implements Callable<Void>, TextOutput {
+
+    @CommandLine.Spec
+    private CommandLine.Model.CommandSpec spec;
 
     @lombok.Getter
     @lombok.Setter
@@ -40,15 +44,16 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
 
     @Override
     public Void call() throws IOException {
-        String executableJar = getExecutableJar();
         try (Writer w = newCharWriter()) {
-            getType().append(w, executableJar);
+            getType().append(w, getExecutableJar());
         }
         return null;
     }
 
-    private String getExecutableJar() {
-        return System.getProperty("java.class.path");
+    private Path getExecutableJar() {
+        String appName = spec.root().name();
+        Predicate<Path> filterByAppName = path -> path.getFileName().toString().startsWith(appName);
+        return JarPathHelper.of(SystemProperties.ofDefault()).getJarPath(GenerateLauncher.class, filterByAppName);
     }
 
     @Override
@@ -65,19 +70,27 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
     public enum LauncherType {
         BASH(StandardCharsets.US_ASCII) {
             @Override
-            void append(Writer w, String executableJar) throws IOException {
-                w.append("#!/bin/sh\njava -jar \"").append(executableJar).append("\" \"$@\"");
+            void append(Writer w, Path executableJar) throws IOException {
+                w.append("#!/bin/sh\njava -jar \"")
+                        .append(optionalPathToString(executableJar))
+                        .append("\" \"$@\"");
             }
         },
         CMD(StandardCharsets.US_ASCII) {
             @Override
-            void append(Writer w, String executableJar) throws IOException {
-                w.append("@java -jar \"").append(executableJar).append("\" %*");
+            void append(Writer w, Path executableJar) throws IOException {
+                w.append("@java -jar \"")
+                        .append(optionalPathToString(executableJar))
+                        .append("\" %*");
             }
         };
 
         private final Charset charset;
 
-        abstract void append(Writer w, String classPath) throws IOException;
+        abstract void append(Writer w, Path classPath) throws IOException;
+
+        static String optionalPathToString(Path path) {
+            return path != null ? path.toString() : "";
+        }
     }
 }

@@ -8,13 +8,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.function.Function;
 
 import static nbbrd.console.picocli.SystemProperties.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.*;
 
 public class ConfigHelperTest {
 
@@ -25,12 +25,6 @@ public class ConfigHelperTest {
     public void testFactories() {
         assertThatNullPointerException()
                 .isThrownBy(() -> ConfigHelper.of(null));
-
-        assertThatNullPointerException()
-                .isThrownBy(() -> ConfigHelper.of(null, ofDefault()));
-
-        assertThatNullPointerException()
-                .isThrownBy(() -> ConfigHelper.of("abc", null));
     }
 
     @Test
@@ -38,7 +32,11 @@ public class ConfigHelperTest {
         Properties context = new Properties();
         context.put(PATH_SEPARATOR, File.pathSeparator);
 
-        ConfigHelper helper = ConfigHelper.of("abc", of(context));
+        ConfigHelper helper = ConfigHelper
+                .builder()
+                .appName("abc")
+                .system(SystemProperties.of(context))
+                .build();
 
         assertThatNullPointerException()
                 .isThrownBy(() -> helper.load(null, ConfigHelper.Scope.SYSTEM));
@@ -58,8 +56,6 @@ public class ConfigHelperTest {
 
         assertThat(loader.apply(ConfigHelper.Scope.SYSTEM))
                 .isEmpty();
-
-        System.out.println(systemCfg);
 
         context.put(JAVA_CLASS_PATH, systemCfg.resolveSibling("abc.jar").toString());
         assertThat(loader.apply(ConfigHelper.Scope.SYSTEM))
@@ -99,9 +95,22 @@ public class ConfigHelperTest {
         Properties context = new Properties();
         context.put(PATH_SEPARATOR, File.pathSeparator);
 
-        ConfigHelper helper = ConfigHelper.of("abc", of(context));
+        ConfigHelper helper = ConfigHelper
+                .builder()
+                .appName("abc")
+                .system(SystemProperties.of(context))
+                .build();
 
         assertThatNullPointerException()
                 .isThrownBy(() -> helper.loadAll(null));
+    }
+
+    @Test
+    public void testLoadFile() {
+        assertThatNullPointerException()
+                .isThrownBy(() -> ConfigHelper.of("abc").loadFile(null, Paths.get("")));
+
+        assertThatCode(() -> ConfigHelper.of("abc").loadFile(new Properties(), null))
+                .doesNotThrowAnyException();
     }
 }
