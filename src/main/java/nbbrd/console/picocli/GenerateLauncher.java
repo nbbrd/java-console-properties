@@ -42,10 +42,20 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
     )
     private LauncherType type;
 
+    @lombok.Getter
+    @lombok.Setter
+    @CommandLine.Option(
+            names = {"--java"},
+            paramLabel = "<file>",
+            description = "Java bin path.",
+            defaultValue = "java"
+    )
+    private Path javaBin;
+
     @Override
     public Void call() throws IOException {
         try (Writer w = newCharWriter()) {
-            getType().append(w, getExecutableJar());
+            getType().append(w, getJavaBin(), getExecutableJar());
         }
         return null;
     }
@@ -70,16 +80,20 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
     public enum LauncherType {
         BASH(StandardCharsets.US_ASCII) {
             @Override
-            void append(Writer w, Path executableJar) throws IOException {
-                w.append("#!/bin/sh\njava -jar \"")
+            void append(Writer w, Path javaBin, Path executableJar) throws IOException {
+                w.append("#!/bin/sh\n")
+                        .append(optionalPathToString(javaBin))
+                        .append(" -jar \"")
                         .append(optionalPathToString(executableJar))
                         .append("\" \"$@\"");
             }
         },
         CMD(StandardCharsets.US_ASCII) {
             @Override
-            void append(Writer w, Path executableJar) throws IOException {
-                w.append("@java -jar \"")
+            void append(Writer w, Path javaBin, Path executableJar) throws IOException {
+                w.append("@")
+                        .append(optionalPathToString(javaBin))
+                        .append(" -jar \"")
                         .append(optionalPathToString(executableJar))
                         .append("\" %*");
             }
@@ -87,7 +101,7 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
 
         private final Charset charset;
 
-        abstract void append(Writer w, Path classPath) throws IOException;
+        abstract void append(Writer w, Path javaBin, Path classPath) throws IOException;
 
         static String optionalPathToString(Path path) {
             return path != null ? path.toString() : "";
