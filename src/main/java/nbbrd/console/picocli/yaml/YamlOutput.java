@@ -37,14 +37,14 @@ import java.util.stream.Collectors;
  */
 public interface YamlOutput extends TextOutput {
 
-    default void dump(Yaml yaml, Object item, Supplier<Optional<Charset>> stdOutEncoding) throws IOException {
-        try (Writer writer = newCharWriter(stdOutEncoding)) {
+    default void dump(Yaml yaml, Object item) throws IOException {
+        try (Writer writer = newCharWriter()) {
             yaml.dump(item, writer);
         }
     }
 
-    default void dumpAll(Yaml yaml, Collection<?> items, Supplier<Optional<Charset>> stdOutEncoding) throws IOException {
-        try (Writer writer = newCharWriter(stdOutEncoding)) {
+    default void dumpAll(Yaml yaml, Collection<?> items) throws IOException {
+        try (Writer writer = newCharWriter()) {
             yaml.dumpAll(items.iterator(), writer);
         }
     }

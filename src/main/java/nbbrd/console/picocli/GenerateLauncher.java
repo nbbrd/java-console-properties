@@ -5,12 +5,15 @@ import nbbrd.console.properties.ConsoleProperties;
 import picocli.CommandLine;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @CommandLine.Command(
         name = "generate-launcher",
@@ -20,6 +23,9 @@ import java.util.concurrent.Callable;
         helpCommand = true
 )
 public class GenerateLauncher implements Callable<Void>, TextOutput {
+
+    @CommandLine.Spec
+    private CommandLine.Model.CommandSpec spec;
 
     @lombok.Getter
     @lombok.Setter
@@ -40,17 +46,28 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
     )
     private LauncherType type;
 
+    @lombok.Getter
+    @lombok.Setter
+    @CommandLine.Option(
+            names = {"--java"},
+            paramLabel = "<file>",
+            description = "Java bin path.",
+            defaultValue = "java"
+    )
+    private Path javaBin;
+
     @Override
     public Void call() throws IOException {
-        String executableJar = getExecutableJar();
-        try (Writer w = newCharWriter(this::getStdOutEncoding)) {
-            getType().append(w, executableJar);
+        try (Writer w = newCharWriter()) {
+            getType().append(w, getJavaBin(), getExecutableJar());
         }
         return null;
     }
 
-    private String getExecutableJar() {
-        return System.getProperty("java.class.path");
+    private Path getExecutableJar() {
+        String appName = spec.root().name();
+        Predicate<Path> filterByAppName = path -> path.getFileName().toString().startsWith(appName);
+        return JarPathHelper.of(SystemProperties.ofDefault()).getJarPath(GenerateLauncher.class, filterByAppName);
     }
 
     @Override
@@ -58,27 +75,76 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
         return getType().charset;
     }
 
-    private Optional<Charset> getStdOutEncoding() {
-        return ConsoleProperties.ofServiceLoader().getStdOutEncoding();
+    @Override
+    public boolean isAppend() {
+        return false;
     }
 
+    @Override
+    public boolean isGzipped() {
+        return false;
+    }
+
+    @Override
+    public OutputStream getStdOutStream() {
+        return System.out;
+    }
+
+    @Override
+    public Charset getStdOutEncoding() {
+        return ConsoleProperties
+                .ofServiceLoader()
+                .getStdOutEncoding()
+                .orElse(UTF_8);
+    }
+    
     @lombok.AllArgsConstructor
     public enum LauncherType {
         BASH(StandardCharsets.US_ASCII) {
             @Override
-            void append(Writer w, String executableJar) throws IOException {
-                w.append("#!/bin/sh\njava -jar \"").append(executableJar).append("\" \"$@\"");
+            void append(Writer w, String java, String jar) throws IOException {
+                w.append("#!/bin/sh\n")
+                        .append(java)
+                        .append(" -jar \"")
+                        .append(jar)
+                        .append("\" \"$@\"");
             }
         },
         CMD(StandardCharsets.US_ASCII) {
             @Override
-            void append(Writer w, String executableJar) throws IOException {
-                w.append("@java -jar \"").append(executableJar).append("\" %*");
+            void append(Writer w, String java, String jar) throws IOException {
+                w.append("@")
+                        .append(java)
+                        .append(" -jar \"")
+                        .append(jar)
+                        .append("\" %*");
+            }
+        },
+        PS1(StandardCharsets.UTF_8) {
+            @Override
+            void append(Writer w, String java, String jar) throws IOException {
+                w.append("if($myinvocation.expectingInput) { $input | & ")
+                        .append(java)
+                        .append(" -jar \"")
+                        .append(jar)
+                        .append("\" @args } else { & ")
+                        .append(java)
+                        .append(" -jar \"")
+                        .append(jar)
+                        .append("\" @args }");
             }
         };
 
         private final Charset charset;
 
-        abstract void append(Writer w, String classPath) throws IOException;
+        abstract void append(Writer w, String java, String jar) throws IOException;
+
+        public void append(Writer w, Path javaBin, Path classPath) throws IOException {
+            append(w, optionalPathToString(javaBin), optionalPathToString(classPath));
+        }
+
+        static String optionalPathToString(Path path) {
+            return path != null ? path.toString() : "";
+        }
     }
 }
