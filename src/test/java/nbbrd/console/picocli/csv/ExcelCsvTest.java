@@ -20,60 +20,61 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 
 public class ExcelCsvTest {
 
+    private final ExcelCsv excel = ExcelCsv.ofServiceLoader();
+
     @Test
     public void testGetSeparator() {
-        ExcelCsv excel = ExcelCsv.of();
         assertThat(excel.getSeparator()).isNotNull();
     }
 
     @Test
     public void testGetDelimiter() {
-        ExcelCsv excel = ExcelCsv.of();
         assertThat(excel.getDelimiter()).isNotEqualTo('\0');
     }
 
     @Test
     public void testGetQuote() {
-        ExcelCsv excel = ExcelCsv.of();
         assertThat(excel.getQuote()).isNotEqualTo('\0');
     }
 
     @Test
     public void testGetEncoding() {
-        assertThat(ExcelCsv.of().getEncoding()).isNotNull();
+        assertThat(excel.getEncoding()).isNotNull();
     }
 
     @Test
     public void testGetLocale() {
-        assertThat(ExcelCsv.of().getLocale()).isNotNull();
+        assertThat(excel.getLocale()).isNotNull();
     }
 
     @Test
     public void testGetDatePattern() {
-        assertThat(ExcelCsv.of().getDatePattern()).isNotEmpty();
+        assertThat(excel.getDatePattern()).isNotEmpty();
     }
 
     @Test
     public void testGetDateTimePattern() {
-        assertThat(ExcelCsv.of().getDateTimePattern()).isNotEmpty();
+        assertThat(excel.getDateTimePattern()).isNotEmpty();
     }
 
     @Test
     public void testGetTimePattern() {
-        assertThat(ExcelCsv.of().getTimePattern()).isNotNull();
+        assertThat(excel.getTimePattern()).isNotNull();
     }
 
     @Test
     public void testExcelApplication() throws IOException, PowerShellExecutionException {
-        assumeThat(ExcelCsv.isWindows()).isTrue();
+        assumeThat(isWindows()).isTrue();
         assumeThat(isExcelInstalled()).isTrue();
-
-        ExcelCsv excel = ExcelCsv.of();
 
         File source = createSource(excel);
         File target = createTarget(source);
 
         assertThat(target).hasSameTextualContentAs(source, excel.getEncoding());
+    }
+
+    private static boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
     private static boolean isExcelInstalled() throws IOException, PowerShellExecutionException {
