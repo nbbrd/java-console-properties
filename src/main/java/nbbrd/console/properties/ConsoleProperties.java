@@ -18,17 +18,18 @@ package nbbrd.console.properties;
 
 import internal.console.properties.ConsolePropertiesSpiLoader;
 import internal.console.properties.FailsafeConsolePropertiesSpi;
+import nbbrd.design.ThreadSafe;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
+import nbbrd.service.ServiceSorter;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
-import nbbrd.service.Quantifier;
-import nbbrd.service.ServiceDefinition;
-import nbbrd.service.ServiceSorter;
-import net.jcip.annotations.ThreadSafe;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * This class allows to retrieve some console properties such as size and

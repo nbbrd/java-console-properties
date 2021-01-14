@@ -19,7 +19,7 @@ module nbbrd.console.properties {
     requires static lombok;
     requires static nbbrd.service;
     requires static org.checkerframework.checker.qual;
-    requires static jcip.annotations;
+    requires static nbbrd.design;
 
     // optional dependencies
     requires static info.picocli;
