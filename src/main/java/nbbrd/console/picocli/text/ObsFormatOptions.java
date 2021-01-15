@@ -17,6 +17,7 @@
 package nbbrd.console.picocli.text;
 
 import nbbrd.console.picocli.LocaleConverter;
+import nbbrd.console.picocli.Profilable;
 import picocli.CommandLine;
 
 import java.util.Locale;
@@ -25,7 +26,7 @@ import java.util.Locale;
  * @author Philippe Charles
  */
 @lombok.Data
-public class ObsFormatOptions implements ObsFormat {
+public class ObsFormatOptions implements ObsFormat, Profilable {
 
     @CommandLine.Option(
             names = {"-L", "--locale"},

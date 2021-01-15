@@ -1,4 +1,4 @@
-package nbbrd.console.picocli.csv;
+package internal.console.picocli.csv;
 
 import com.github.tuupertunut.powershelllibjava.PowerShell;
 import com.github.tuupertunut.powershelllibjava.PowerShellExecutionException;
@@ -20,46 +20,46 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 
 public class ExcelCsvTest {
 
-    private final ExcelCsv excel = ExcelCsv.ofServiceLoader();
+    private final ExcelCsv xl = ExcelCsv.INSTANCE;
 
     @Test
     public void testGetSeparator() {
-        assertThat(excel.getSeparator()).isNotNull();
+        assertThat(xl.getSeparator()).isNotNull();
     }
 
     @Test
     public void testGetDelimiter() {
-        assertThat(excel.getDelimiter()).isNotEqualTo('\0');
+        assertThat(xl.getDelimiter()).isNotEqualTo('\0');
     }
 
     @Test
     public void testGetQuote() {
-        assertThat(excel.getQuote()).isNotEqualTo('\0');
+        assertThat(xl.getQuote()).isNotEqualTo('\0');
     }
 
     @Test
     public void testGetEncoding() {
-        assertThat(excel.getEncoding()).isNotNull();
+        assertThat(xl.getEncoding()).isNotNull();
     }
 
     @Test
     public void testGetLocale() {
-        assertThat(excel.getLocale()).isNotNull();
+        assertThat(xl.getLocale()).isNotNull();
     }
 
     @Test
     public void testGetDatePattern() {
-        assertThat(excel.getDatePattern()).isNotEmpty();
+        assertThat(xl.getDatePattern()).isNotEmpty();
     }
 
     @Test
     public void testGetDateTimePattern() {
-        assertThat(excel.getDateTimePattern()).isNotEmpty();
+        assertThat(xl.getDateTimePattern()).isNotEmpty();
     }
 
     @Test
     public void testGetTimePattern() {
-        assertThat(excel.getTimePattern()).isNotNull();
+        assertThat(xl.getTimePattern()).isNotNull();
     }
 
     @Test
@@ -67,10 +67,10 @@ public class ExcelCsvTest {
         assumeThat(isWindows()).isTrue();
         assumeThat(isExcelInstalled()).isTrue();
 
-        File source = createSource(excel);
+        File source = createSource(xl);
         File target = createTarget(source);
 
-        assertThat(target).hasSameTextualContentAs(source, excel.getEncoding());
+        assertThat(target).hasSameTextualContentAs(source, xl.getEncoding());
     }
 
     private static boolean isWindows() {

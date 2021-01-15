@@ -1,5 +1,6 @@
 package nbbrd.console.picocli.text;
 
+import nbbrd.console.picocli.Profilable;
 import nbbrd.console.picocli.StandardCharsetCandidates;
 import nbbrd.console.properties.ConsoleProperties;
 import picocli.CommandLine;
@@ -11,7 +12,7 @@ import java.nio.file.Path;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @lombok.Data
-public class TextOutputOptions implements TextOutput {
+public class TextOutputOptions implements TextOutput, Profilable {
 
     @CommandLine.Option(
             names = {"-o", "--output"},

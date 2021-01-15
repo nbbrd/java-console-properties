@@ -41,8 +41,7 @@ module nbbrd.console.properties {
             internal.console.properties.x.CommandPrompt,
             internal.console.properties.x.MingwXterm;
 
-    uses nbbrd.console.picocli.csv.ExcelCsv.Spi;
-    provides nbbrd.console.picocli.csv.ExcelCsv.Spi with
-            internal.console.picocli.csv.ExcelOnMacos,
-            internal.console.picocli.csv.ExcelOnWindows;
+    uses nbbrd.console.picocli.Profile.Spi;
+    provides nbbrd.console.picocli.Profile.Spi with
+            internal.console.picocli.csv.ExcelProfile;
 }
