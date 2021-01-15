@@ -24,7 +24,7 @@ import java.util.Objects;
  * https://superuser.com/questions/606272/how-to-get-excel-to-interpret-the-comma-as-a-default-delimiter-in-csv-files
  */
 @ThreadSafe
-@lombok.Builder(builderClassName = "Builder", toBuilder = true)
+@lombok.Builder(toBuilder = true)
 public final class ExcelCsv {
 
     /**

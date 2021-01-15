@@ -13,7 +13,7 @@ import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-@lombok.Builder(builderClassName = "Builder")
+@lombok.Builder
 public class ConfigHelper {
 
     public enum Scope {SYSTEM, GLOBAL, LOCAL}

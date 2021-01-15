@@ -38,7 +38,7 @@ import java.util.OptionalInt;
  * @author Philippe Charles
  */
 @ThreadSafe
-@lombok.Builder(builderClassName = "Builder", toBuilder = true)
+@lombok.Builder(toBuilder = true)
 public final class ConsoleProperties {
 
     /**
