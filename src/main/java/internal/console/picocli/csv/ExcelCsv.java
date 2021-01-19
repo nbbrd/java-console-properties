@@ -3,19 +3,20 @@ package internal.console.picocli.csv;
 import lombok.AccessLevel;
 import nbbrd.design.ThreadSafe;
 import nbbrd.design.VisibleForTesting;
+import nbbrd.io.sys.OS;
+import nbbrd.io.win.RegWrapper;
 import nbbrd.picocsv.Csv;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.DecimalFormatSymbols;
 import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
+import java.util.Collection;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -107,42 +108,18 @@ public final class ExcelCsv {
 
             private String get(String key) {
                 try {
-                    return regQuery("HKCU\\Control Panel\\International", key);
+                    return RegWrapper.query("HKCU\\Control Panel\\International", false)
+                            .values()
+                            .stream()
+                            .flatMap(Collection::stream)
+                            .filter(o -> o.getName().equals(key))
+                            .map(RegWrapper.RegValue::getValue)
+                            .findFirst()
+                            .orElse(null);
                 } catch (IOException ex) {
                     log.log(Level.WARNING, "While querying", ex);
                     return null;
                 }
-            }
-
-            private String regQuery(String path, String key) throws IOException {
-                String response = execToString("reg query \"" + path + "\" /v " + key);
-                String anchor = "    " + key + "    REG_SZ    ";
-                int anchorIdx = response.lastIndexOf(anchor);
-                if (anchorIdx == -1) return null;
-                int lineIdx = response.indexOf(System.lineSeparator(), anchorIdx);
-                if (lineIdx == -1) return null;
-                return response.substring(anchorIdx + anchor.length(), lineIdx);
-            }
-
-            private String execToString(String command) throws IOException {
-                Process process = Runtime.getRuntime().exec(command);
-                try (java.io.Reader reader = new InputStreamReader(process.getInputStream(), Charset.defaultCharset())) {
-                    return readerToString(reader);
-                } finally {
-                    try {
-                        process.waitFor(1, TimeUnit.SECONDS);
-                    } catch (InterruptedException ex) {
-                        throw new IOException(ex);
-                    }
-                }
-            }
-
-            private String readerToString(java.io.Reader reader) throws IOException {
-                StringBuilder result = new StringBuilder();
-                char[] buffer = new char[8 * 1024];
-                int read = 0;
-                while ((read = reader.read(buffer)) != -1) result.append(buffer, 0, read);
-                return result.toString();
             }
         },
         MAC {
@@ -188,13 +165,14 @@ public final class ExcelCsv {
         private static final char SEMICOLON = ';';
 
         public static @NonNull Spi get() {
-            if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                return WIN;
+            switch (OS.NAME) {
+                case WINDOWS:
+                    return WIN;
+                case MACOS:
+                    return MAC;
+                default:
+                    return UNKNOWN;
             }
-            if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-                return MAC;
-            }
-            return UNKNOWN;
         }
     }
 }

@@ -25,6 +25,7 @@ module nbbrd.console.properties {
     requires static info.picocli;
     requires static nbbrd.picocsv;
     requires static nbbrd.io.base;
+    requires static nbbrd.io.win;
     requires static org.yaml.snakeyaml;
 
     requires java.logging;
