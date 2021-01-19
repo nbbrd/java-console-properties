@@ -1,5 +1,6 @@
 package nbbrd.console.picocli;
 
+import nbbrd.io.sys.SystemProperties;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -13,7 +14,7 @@ import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-@lombok.Builder(builderClassName = "Builder")
+@lombok.Builder
 public class ConfigHelper {
 
     public enum Scope {SYSTEM, GLOBAL, LOCAL}
@@ -34,7 +35,7 @@ public class ConfigHelper {
 
     public static Builder builder() {
         return new Builder()
-                .system(SystemProperties.ofDefault())
+                .system(SystemProperties.DEFAULT)
                 .onLoadingError(ConfigHelper::doNotReportError);
     }
 

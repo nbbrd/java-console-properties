@@ -1,11 +1,12 @@
 package nbbrd.console.picocli.csv;
 
+import nbbrd.console.picocli.Profilable;
 import nbbrd.console.picocli.text.TextInputOptions;
 import nbbrd.picocsv.Csv;
 import picocli.CommandLine;
 
 @lombok.Data
-public class CsvInputOptions extends TextInputOptions implements CsvInput {
+public class CsvInputOptions extends TextInputOptions implements CsvInput, Profilable {
 
     @CommandLine.Option(
             names = {"-d", "--delimiter"},

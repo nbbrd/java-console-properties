@@ -5,7 +5,7 @@
 
     <groupId>be.nbb.rd</groupId>
     <artifactId>java-console-properties</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
 
     <packaging>jar</packaging>
 
@@ -29,13 +29,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.6.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.stephenc.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>
-            <version>1.0-1</version>
+            <version>3.9.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -48,24 +42,29 @@
             <artifactId>java-service-processor</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-design-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- compile and runtime -->
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.5.1</version>
+            <version>4.6.1</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>be.nbb.rd</groupId>
             <artifactId>picocsv</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.0</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>be.nbb.rd</groupId>
-            <artifactId>java-io-base</artifactId>
-            <version>0.0.7</version>
+            <artifactId>java-io-win</artifactId>
+            <version>0.0.10</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -79,19 +78,25 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.17.2</version>
+            <version>3.18.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.jimfs</groupId>
             <artifactId>jimfs</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.tuupertunut</groupId>
+            <artifactId>powershell-lib-java</artifactId>
+            <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -135,8 +140,9 @@
                 </property>
             </activation>
             <properties>
-                <lombok.version>1.18.12</lombok.version>
+                <lombok.version>1.18.16</lombok.version>
                 <java-service.version>1.3.0</java-service.version>
+                <java-design.version>1.1.2</java-design.version>
             </properties>
             <dependencyManagement>
                 <dependencies>
@@ -154,6 +160,16 @@
                         <groupId>be.nbb.rd</groupId>
                         <artifactId>java-service-processor</artifactId>
                         <version>${java-service.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>be.nbb.rd</groupId>
+                        <artifactId>java-design-annotation</artifactId>
+                        <version>${java-design.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>be.nbb.rd</groupId>
+                        <artifactId>java-design-processor</artifactId>
+                        <version>${java-design.version}</version>
                     </dependency>
                 </dependencies>
             </dependencyManagement>
@@ -173,6 +189,11 @@
                                     <groupId>be.nbb.rd</groupId>
                                     <artifactId>java-service-processor</artifactId>
                                     <version>${java-service.version}</version>
+                                </path>
+                                <path>
+                                    <groupId>be.nbb.rd</groupId>
+                                    <artifactId>java-design-processor</artifactId>
+                                    <version>${java-design.version}</version>
                                 </path>
                             </annotationProcessorPaths>
                         </configuration>

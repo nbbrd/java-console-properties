@@ -16,12 +16,13 @@
  */
 package nbbrd.console.picocli.yaml;
 
+import nbbrd.console.picocli.Profilable;
 import nbbrd.console.picocli.text.TextOutputOptions;
 
 /**
  * @author Philippe Charles
  */
 @lombok.Data
-public class YamlOutputOptions extends TextOutputOptions implements YamlOutput {
+public class YamlOutputOptions extends TextOutputOptions implements YamlOutput, Profilable {
 
 }

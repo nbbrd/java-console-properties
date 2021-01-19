@@ -2,6 +2,7 @@ package nbbrd.console.picocli;
 
 import nbbrd.console.picocli.text.TextOutput;
 import nbbrd.console.properties.ConsoleProperties;
+import nbbrd.io.sys.SystemProperties;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class GenerateLauncher implements Callable<Void>, TextOutput {
     private Path getExecutableJar() {
         String appName = spec.root().name();
         Predicate<Path> filterByAppName = path -> path.getFileName().toString().startsWith(appName);
-        return JarPathHelper.of(SystemProperties.ofDefault()).getJarPath(GenerateLauncher.class, filterByAppName);
+        return JarPathHelper.of(SystemProperties.DEFAULT).getJarPath(GenerateLauncher.class, filterByAppName);
     }
 
     @Override

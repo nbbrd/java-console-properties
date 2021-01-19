@@ -1,5 +1,6 @@
 package nbbrd.console.picocli;
 
+import nbbrd.io.sys.SystemProperties;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -22,7 +23,7 @@ public class JarPathHelper {
     public Path getJarPath(@NonNull Class<?> anchor, @NonNull Predicate<? super Path> filter) {
         Objects.requireNonNull(anchor);
         Objects.requireNonNull(filter);
-        List<Path> classPath = system.getClassPath();
+        List<Path> classPath = system.getJavaClassPath();
         switch (classPath.size()) {
             case 0:
                 return null;

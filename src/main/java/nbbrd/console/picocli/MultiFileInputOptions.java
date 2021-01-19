@@ -26,7 +26,7 @@ import java.util.List;
  * @author Philippe Charles
  */
 @lombok.Data
-public class MultiFileInputOptions implements MultiFileInput {
+public class MultiFileInputOptions implements MultiFileInput, Profilable {
 
     @CommandLine.Parameters(
             paramLabel = "<file>",

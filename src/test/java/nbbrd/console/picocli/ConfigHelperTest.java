@@ -1,11 +1,13 @@
 package nbbrd.console.picocli;
 
+import nbbrd.io.sys.SystemProperties;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +15,7 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.function.Function;
 
-import static nbbrd.console.picocli.SystemProperties.*;
+import static nbbrd.io.sys.SystemProperties.*;
 import static org.assertj.core.api.Assertions.*;
 
 public class ConfigHelperTest {
@@ -35,7 +37,7 @@ public class ConfigHelperTest {
         ConfigHelper helper = ConfigHelper
                 .builder()
                 .appName("abc")
-                .system(SystemProperties.of(context))
+                .system(SystemProperties.of(context, FileSystems.getDefault()))
                 .build();
 
         assertThatNullPointerException()
@@ -98,7 +100,7 @@ public class ConfigHelperTest {
         ConfigHelper helper = ConfigHelper
                 .builder()
                 .appName("abc")
-                .system(SystemProperties.of(context))
+                .system(SystemProperties.of(context, FileSystems.getDefault()))
                 .build();
 
         assertThatNullPointerException()
