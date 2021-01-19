@@ -1,5 +1,6 @@
 package nbbrd.console.picocli;
 
+import nbbrd.io.sys.SystemProperties;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -34,7 +35,7 @@ public class ConfigHelper {
 
     public static Builder builder() {
         return new Builder()
-                .system(SystemProperties.ofDefault())
+                .system(SystemProperties.DEFAULT)
                 .onLoadingError(ConfigHelper::doNotReportError);
     }
 
