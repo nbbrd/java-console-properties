@@ -30,9 +30,7 @@ import java.util.function.Supplier;
  */
 @CommandLine.Command(
         name = "print-context",
-        mixinStandardHelpOptions = true,
         description = {"Print system and environment context."},
-        optionListHeading = "Options:%n",
         helpCommand = true
 )
 public class PrintContext implements Callable<Void> {

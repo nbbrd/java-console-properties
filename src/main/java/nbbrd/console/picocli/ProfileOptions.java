@@ -2,7 +2,8 @@ package nbbrd.console.picocli;
 
 import picocli.CommandLine;
 
-@lombok.Data
+@lombok.Getter
+@lombok.Setter
 public class ProfileOptions implements Profile {
 
     @CommandLine.Option(

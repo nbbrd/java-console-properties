@@ -5,7 +5,8 @@ import nbbrd.console.picocli.text.TextInputOptions;
 import nbbrd.picocsv.Csv;
 import picocli.CommandLine;
 
-@lombok.Data
+@lombok.Getter
+@lombok.Setter
 public class CsvInputOptions extends TextInputOptions implements CsvInput, Profilable {
 
     @CommandLine.Option(

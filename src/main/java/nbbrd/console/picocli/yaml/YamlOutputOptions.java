@@ -18,11 +18,19 @@ package nbbrd.console.picocli.yaml;
 
 import nbbrd.console.picocli.Profilable;
 import nbbrd.console.picocli.text.TextOutputOptions;
+import picocli.CommandLine;
 
 /**
  * @author Philippe Charles
  */
-@lombok.Data
+@lombok.Getter
+@lombok.Setter
 public class YamlOutputOptions extends TextOutputOptions implements YamlOutput, Profilable {
 
+    @CommandLine.Option(
+            names = "--dummy-yaml-option",
+            hidden = true,
+            defaultValue = "false"
+    )
+    private boolean dummyYamlOption;
 }

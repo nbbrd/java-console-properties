@@ -25,7 +25,8 @@ import java.util.Locale;
 /**
  * @author Philippe Charles
  */
-@lombok.Data
+@lombok.Getter
+@lombok.Setter
 public class ObsFormatOptions implements ObsFormat, Profilable {
 
     @CommandLine.Option(
