@@ -11,7 +11,8 @@ import java.nio.file.Path;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@lombok.Data
+@lombok.Getter
+@lombok.Setter
 public class TextInputOptions implements TextInput, Profilable {
 
     @CommandLine.Option(

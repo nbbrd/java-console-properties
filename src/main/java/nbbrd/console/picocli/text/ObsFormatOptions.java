@@ -25,7 +25,8 @@ import java.util.Locale;
 /**
  * @author Philippe Charles
  */
-@lombok.Data
+@lombok.Getter
+@lombok.Setter
 public class ObsFormatOptions implements ObsFormat, Profilable {
 
     @CommandLine.Option(
@@ -48,7 +49,7 @@ public class ObsFormatOptions implements ObsFormat, Profilable {
     @CommandLine.Option(
             names = {"-S", "--datetime"},
             paramLabel = "<pattern>",
-            defaultValue = "yyyy-MM-ddTHH:mm:ss",
+            defaultValue = "yyyy-MM-dd'T'HH:mm:ss",
             description = "Pattern used to format dates and times."
     )
     private String datetimePattern;
