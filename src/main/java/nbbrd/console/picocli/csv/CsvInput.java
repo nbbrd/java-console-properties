@@ -10,7 +10,7 @@ public interface CsvInput extends TextInput {
 
     char getDelimiter();
 
-    Csv.NewLine getSeparator();
+    CsvNewLine getSeparator();
 
     boolean isLenientSeparator();
 
@@ -21,16 +21,16 @@ public interface CsvInput extends TextInput {
                 .toBuilder()
                 .delimiter(getDelimiter())
                 .quote(getQuote())
-                .separator(getSeparator())
+                .separator(getSeparator().getSeparator())
                 .build();
     }
 
-    default Csv.Parsing toParsing() {
-        return isLenientSeparator() ? Csv.Parsing.LENIENT : Csv.Parsing.STRICT;
+    default Csv.ReaderOptions toParsing() {
+        return Csv.ReaderOptions.builder().lenientSeparator(isLenientSeparator()).build();
     }
 
     default Csv.Reader newCsvReader(Reader charReader) throws IOException {
-        return Csv.Reader.of(charReader, toFormat(), toParsing());
+        return Csv.Reader.of(toFormat(), toParsing(), charReader, Csv.DEFAULT_CHAR_BUFFER_SIZE);
     }
 
     default Csv.Reader newCsvReader() throws IOException {

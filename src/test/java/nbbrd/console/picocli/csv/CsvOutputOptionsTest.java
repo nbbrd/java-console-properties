@@ -15,7 +15,7 @@ public class CsvOutputOptionsTest {
     public void testNewCsvWriter() throws IOException {
         CsvOutputOptions options = new CsvOutputOptions();
         options.setEncoding(StandardCharsets.UTF_8);
-        options.setSeparator(Csv.Format.RFC4180.getSeparator());
+        options.setSeparator(CsvNewLine.parse(Csv.Format.RFC4180.getSeparator()));
         options.setDelimiter(Csv.Format.RFC4180.getDelimiter());
         options.setQuote(Csv.Format.RFC4180.getQuote());
 

@@ -10,7 +10,7 @@ public interface CsvOutput extends TextOutput {
 
     char getDelimiter();
 
-    Csv.NewLine getSeparator();
+    CsvNewLine getSeparator();
 
     char getQuote();
 
@@ -19,12 +19,12 @@ public interface CsvOutput extends TextOutput {
                 .toBuilder()
                 .delimiter(getDelimiter())
                 .quote(getQuote())
-                .separator(getSeparator())
+                .separator(getSeparator().getSeparator())
                 .build();
     }
 
     default Csv.Writer newCsvWriter(Writer charWriter) throws IOException {
-        return Csv.Writer.of(charWriter, toFormat());
+        return Csv.Writer.of(toFormat(), Csv.WriterOptions.DEFAULT, charWriter, Csv.DEFAULT_CHAR_BUFFER_SIZE);
     }
 
     default Csv.Writer newCsvWriter() throws IOException {

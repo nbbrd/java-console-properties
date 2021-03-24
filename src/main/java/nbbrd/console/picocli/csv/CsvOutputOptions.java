@@ -23,7 +23,7 @@ public class CsvOutputOptions extends TextOutputOptions implements CsvOutput, Pr
             description = "NewLine type (${COMPLETION-CANDIDATES}).",
             defaultValue = "WINDOWS"
     )
-    private Csv.NewLine separator;
+    private CsvNewLine separator;
 
     @CommandLine.Option(
             names = {"-q", "--quote"},
