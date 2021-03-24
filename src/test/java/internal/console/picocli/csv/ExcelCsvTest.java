@@ -99,10 +99,10 @@ public class ExcelCsvTest {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(excel.getTimePattern(), locale);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(excel.getDateTimePattern(), locale);
 
-        Csv.Format format = Csv.Format.builder().separator(excel.getSeparator()).delimiter(excel.getDelimiter()).quote(excel.getQuote()).build();
+        Csv.Format format = Csv.Format.builder().separator(excel.getSeparator().getSeparator()).delimiter(excel.getDelimiter()).quote(excel.getQuote()).build();
         Charset encoding = excel.getEncoding();
 
-        try (Csv.Writer writer = Csv.Writer.of(Files.newBufferedWriter(result.toPath(), encoding), format)) {
+        try (Csv.Writer writer = Csv.Writer.of(format, Csv.WriterOptions.DEFAULT, Files.newBufferedWriter(result.toPath(), encoding), Csv.DEFAULT_CHAR_BUFFER_SIZE)) {
             writer.writeField(A1);
             writer.writeField(C1.format(dateFormatter));
             writer.writeField(D1.format(timeFormatter));

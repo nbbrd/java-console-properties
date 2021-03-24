@@ -23,7 +23,7 @@ public class CsvInputOptions extends TextInputOptions implements CsvInput, Profi
             description = "NewLine type (${COMPLETION-CANDIDATES}).",
             defaultValue = "WINDOWS"
     )
-    private Csv.NewLine separator;
+    private CsvNewLine separator;
 
     @CommandLine.Option(
             names = {"-l", "--lenient-line"},

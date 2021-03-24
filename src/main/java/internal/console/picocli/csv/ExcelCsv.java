@@ -1,11 +1,11 @@
 package internal.console.picocli.csv;
 
 import lombok.AccessLevel;
+import nbbrd.console.picocli.csv.CsvNewLine;
 import nbbrd.design.ThreadSafe;
 import nbbrd.design.VisibleForTesting;
 import nbbrd.io.sys.OS;
 import nbbrd.io.win.RegWrapper;
-import nbbrd.picocsv.Csv;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -32,8 +32,8 @@ public final class ExcelCsv {
     @lombok.NonNull
     private final Spi provider;
 
-    public Csv.@NonNull NewLine getSeparator() {
-        return Csv.NewLine.WINDOWS;
+    public @NonNull CsvNewLine getSeparator() {
+        return CsvNewLine.WINDOWS;
     }
 
     public char getDelimiter() {
