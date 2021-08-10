@@ -81,6 +81,12 @@
             <artifactId>java-io-win</artifactId>
             <version>0.0.14</version>
             <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -320,7 +326,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.0.0-M3</version>
+                        <version>3.0.0</version>
                         <dependencies>
                             <dependency>
                                 <groupId>org.kordamp.maven</groupId>
@@ -445,7 +451,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <!-- Base deploy -->
         <profile>
             <id>base-deploy</id>
