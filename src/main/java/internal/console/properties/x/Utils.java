@@ -64,7 +64,11 @@ class Utils {
 
     private Optional<String> execToString(String... command) {
         try {
-            return Optional.of(ProcessReader.readToString(command));
+            return Optional.of(ProcessReader.readToString(
+                    new ProcessBuilder(command)
+                            .redirectError(ProcessBuilder.Redirect.INHERIT)
+                            .start()
+            ));
         } catch (IOException ex) {
             if (log.isLoggable(Level.WARNING)) {
                 log.log(Level.WARNING, "Failed to execute command: " + Arrays.toString(command), ex);
