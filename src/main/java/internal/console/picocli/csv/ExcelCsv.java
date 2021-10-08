@@ -87,7 +87,7 @@ public final class ExcelCsv {
 
     @VisibleForTesting
     @lombok.extern.java.Log
-    enum Spi {
+    static enum Spi {
         WIN {
             @Override
             public Character getDelimiterOrNull(char decimalSeparator) {
