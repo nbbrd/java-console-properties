@@ -27,7 +27,7 @@ import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
 import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_RANK;
 import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
 import static org.assertj.core.api.Assertions.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

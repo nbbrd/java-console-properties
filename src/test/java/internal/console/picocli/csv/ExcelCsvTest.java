@@ -3,7 +3,7 @@ package internal.console.picocli.csv;
 import com.github.tuupertunut.powershelllibjava.PowerShell;
 import com.github.tuupertunut.powershelllibjava.PowerShellExecutionException;
 import nbbrd.picocsv.Csv;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.charset.Charset;

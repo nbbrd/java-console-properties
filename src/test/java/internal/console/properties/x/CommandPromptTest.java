@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 import java.util.ServiceLoader;
 import nbbrd.console.properties.ConsoleProperties;
 import static org.assertj.core.api.Assertions.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

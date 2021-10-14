@@ -2,7 +2,7 @@ package nbbrd.console.picocli.csv;
 
 import nbbrd.picocsv.Csv;
 import org.assertj.core.data.Index;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;

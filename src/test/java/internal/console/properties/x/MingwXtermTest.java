@@ -19,7 +19,7 @@ package internal.console.properties.x;
 import java.util.ServiceLoader;
 import nbbrd.console.properties.ConsoleProperties;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
