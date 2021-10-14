@@ -1,31 +1,31 @@
 /*
  * Copyright 2019 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package internal.console.properties.x;
+
+import lombok.AccessLevel;
+import nbbrd.console.properties.ConsoleProperties;
+import nbbrd.service.ServiceProvider;
 
 import java.nio.charset.Charset;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
-import nbbrd.console.properties.ConsoleProperties;
-import nbbrd.service.ServiceProvider;
 
 /**
- *
  * @author Philippe Charles
  */
 @ServiceProvider(ConsoleProperties.Spi.class)
@@ -40,6 +40,11 @@ public final class CommandPrompt implements ConsoleProperties.Spi {
 
     public CommandPrompt() {
         this(System::getProperty, Utils.ExternalCommand.getDefault());
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return Utils.isWindows(sys);
     }
 
     @Override
@@ -59,26 +64,22 @@ public final class CommandPrompt implements ConsoleProperties.Spi {
 
     @Override
     public int getColumns() {
-        return Utils.isWindows(sys)
-                ? cmd.exec("powershell", "-command", "(Get-Host).ui.rawui.windowsize.width").map(Integer::valueOf).orElse(UNKNOWN_COLUMNS)
-                : UNKNOWN_COLUMNS;
+        return cmd.exec("powershell", "-command", "(Get-Host).ui.rawui.windowsize.width").map(Integer::valueOf).orElse(UNKNOWN_COLUMNS);
     }
 
     @Override
     public int getRows() {
-        return Utils.isWindows(sys)
-                ? cmd.exec("powershell", "-command", "(Get-Host).ui.rawui.windowsize.height").map(Integer::valueOf).orElse(UNKNOWN_ROWS)
-                : UNKNOWN_ROWS;
+        return cmd.exec("powershell", "-command", "(Get-Host).ui.rawui.windowsize.height").map(Integer::valueOf).orElse(UNKNOWN_ROWS);
     }
 
     private Charset getChcpEncodingOrNull() {
-        return Utils.isWindows(sys)
-                ? cmd.exec("cmd", "/C", "chcp").map(CommandPrompt::parseChcp).orElse(null)
-                : null;
+        return cmd.exec("cmd", "/C", "chcp").map(CommandPrompt::parseChcp).orElse(null);
     }
 
+    private static final Pattern CHCP_PATTERN = Pattern.compile("\\d+", Pattern.MULTILINE);
+
     static Charset parseChcp(String chcp) {
-        Matcher m = Pattern.compile("\\d+", Pattern.MULTILINE).matcher(chcp);
+        Matcher m = CHCP_PATTERN.matcher(chcp);
         if (m.find()) {
             return Charset.forName("cp" + m.group());
         }

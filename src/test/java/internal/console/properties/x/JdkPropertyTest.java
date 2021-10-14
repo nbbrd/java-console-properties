@@ -1,28 +1,32 @@
 /*
  * Copyright 2019 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package internal.console.properties.x;
 
-import java.util.ServiceLoader;
 import nbbrd.console.properties.ConsoleProperties;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+
+import java.util.ServiceLoader;
+
+import static internal.console.properties.x.JdkProperty.UNSUPPORTED_STDOUT_ENCODING;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- *
  * @author Philippe Charles
  */
 public class JdkPropertyTest {
@@ -31,5 +35,21 @@ public class JdkPropertyTest {
     public void testRegistration() {
         assertThat(ServiceLoader.load(ConsoleProperties.Spi.class))
                 .anyMatch(JdkProperty.class::isInstance);
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = UNSUPPORTED_STDOUT_ENCODING, matches = "^(?!\\s*$).+")
+    public void testIfAvailable() {
+        JdkProperty x = new JdkProperty();
+        assertThat(x.getStdInEncodingOrNull()).isNotNull();
+        assertThat(x.getStdOutEncodingOrNull()).isNotNull();
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = UNSUPPORTED_STDOUT_ENCODING, matches = "^(?!\\s*$).+")
+    public void testIfUnavailable() {
+        JdkProperty x = new JdkProperty();
+        assertThat(x.getStdInEncodingOrNull()).isNull();
+        assertThat(x.getStdOutEncodingOrNull()).isNull();
     }
 }

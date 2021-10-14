@@ -32,23 +32,26 @@ import java.util.logging.Level;
 @lombok.experimental.UtilityClass
 class Utils {
 
-    boolean isWindows(UnaryOperator<String> sys) {
+    static final String MSYSTEM_ENV = "MSYSTEM";
+    static final String TERM_ENV = "TERM";
+
+    static boolean isWindows(UnaryOperator<String> sys) {
         String result = sys.apply("os.name");
         return result != null && result.startsWith("Windows");
     }
 
-    boolean isCygwin(UnaryOperator<String> sys, UnaryOperator<String> env) {
+    static boolean isCygwin(UnaryOperator<String> sys, UnaryOperator<String> env) {
         return isWindows(sys)
                 && env.apply("PWD") != null
                 && env.apply("PWD").startsWith("/")
                 && !"cygwin".equals(env.apply("TERM"));
     }
 
-    boolean isMingwXterm(UnaryOperator<String> sys, UnaryOperator<String> env) {
+    static boolean isMingwXterm(UnaryOperator<String> sys, UnaryOperator<String> env) {
         return isWindows(sys)
-                && env.apply("MSYSTEM") != null
-                && env.apply("MSYSTEM").startsWith("MINGW")
-                && "xterm".equals(env.apply("TERM"));
+                && env.apply(MSYSTEM_ENV) != null
+                && env.apply(MSYSTEM_ENV).startsWith("MINGW")
+                && "xterm".equals(env.apply(TERM_ENV));
     }
 
     @FunctionalInterface
@@ -62,7 +65,7 @@ class Utils {
         }
     }
 
-    private Optional<String> execToString(String... command) {
+    private static Optional<String> execToString(String... command) {
         try {
             return Optional.of(ProcessReader.readToString(
                     new ProcessBuilder(command)

@@ -1,36 +1,36 @@
 /*
  * Copyright 2019 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package internal.console.properties;
 
+import _test.CustomRuntimeException;
 import _test.Failing;
 import _test.Sample;
-import _test.CustomRuntimeException;
+import org.junit.jupiter.api.Test;
+
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.BiConsumer;
-import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
-import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_RANK;
-import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
-import static org.assertj.core.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+
+import static nbbrd.console.properties.ConsoleProperties.Spi.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
- *
  * @author Philippe Charles
  */
 public class FailsafeConsolePropertiesSpiTest {
@@ -45,6 +45,20 @@ public class FailsafeConsolePropertiesSpiTest {
 
         assertThatNullPointerException()
                 .isThrownBy(() -> FailsafeConsolePropertiesSpi.wrap(null));
+    }
+
+    @Test
+    public void testIsAvailable() {
+        errorStack.clear();
+
+        assertThat(unknown.isAvailable()).isTrue();
+        assertThat(errorStack).isEmpty();
+
+        assertThat(first.isAvailable()).isTrue();
+        assertThat(errorStack).isEmpty();
+
+        assertThat(npe.isAvailable()).isFalse();
+        assertThat(errorStack).hasSize(1).last().isInstanceOf(CustomRuntimeException.class);
     }
 
     @Test
