@@ -16,14 +16,9 @@
  */
 package internal.console.properties.x;
 
-import _test.WhichWrapper;
 import nbbrd.console.properties.ConsoleProperties;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
-import java.io.IOException;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -43,27 +38,15 @@ public class PowerShellConsoleProviderTest {
     }
 
     @Test
-    @EnabledOnOs(OS.WINDOWS)
-    public void testIfAvailable() {
-        PowerShellConsoleProvider x = new PowerShellConsoleProvider();
-        assertThat(x.isAvailable()).isTrue();
-        assertThat(x.getStdInEncodingOrNull()).isNotNull();
-        assertThat(x.getStdOutEncodingOrNull()).isNotNull();
-        assertThat(x.getColumns()).isGreaterThan(0);
-        assertThat(x.getRows()).isGreaterThan(0);
-    }
-
-    @Test
-    @DisabledOnOs(OS.WINDOWS)
-    public void testIfUnavailable() throws IOException {
+    public void testIfUnavailable() {
         AtomicInteger errors = new AtomicInteger();
         PowerShellConsoleProvider x = new PowerShellConsoleProvider((ex, cmd) -> errors.incrementAndGet());
-        assertThat(x.isAvailable()).isTrue();
-        if (WhichWrapper.isAvailable(PowerShellConsoleProvider.CORE_EXECUTABLE)) {
+        if (x.isAvailable()) {
             assertThat(x.getStdInEncodingOrNull()).isNotNull();
             assertThat(x.getStdOutEncodingOrNull()).isNotNull();
             assertThat(x.getColumns()).isGreaterThan(0);
             assertThat(x.getRows()).isGreaterThan(0);
+            assertThat(errors).hasValue(0);
         } else {
             assertThat(x.getStdInEncodingOrNull()).isNull();
             assertThat(x.getStdOutEncodingOrNull()).isNull();

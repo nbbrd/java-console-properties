@@ -16,11 +16,14 @@
  */
 package internal.console.properties.x;
 
+import lombok.AccessLevel;
 import nbbrd.console.properties.ConsoleProperties;
 import nbbrd.io.sys.OS;
 import nbbrd.service.ServiceProvider;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,7 +33,15 @@ import static internal.console.properties.x.Utils.NORMAL_RANK;
  * @author Philippe Charles
  */
 @ServiceProvider(ConsoleProperties.Spi.class)
+@lombok.AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ChcpConsoleProvider implements ConsoleProperties.Spi {
+
+    @lombok.NonNull
+    private final BiConsumer<IOException, String[]> onError;
+
+    public ChcpConsoleProvider() {
+        this(Utils::logCommandException);
+    }
 
     @Override
     public boolean isAvailable() {
@@ -63,7 +74,7 @@ public final class ChcpConsoleProvider implements ConsoleProperties.Spi {
     }
 
     private Charset getChcpEncodingOrNull() {
-        return Utils.execToString(Utils::logCommandException, "cmd", "/C", "chcp")
+        return Utils.execToString(onError, "cmd", "/C", "chcp")
                 .map(ChcpConsoleProvider::parseChcp)
                 .orElse(null);
     }

@@ -44,7 +44,7 @@ public final class PowerShellConsoleProvider implements ConsoleProperties.Spi {
 
     @Override
     public boolean isAvailable() {
-        return true;
+        return OS.NAME.equals(OS.Name.WINDOWS) || isCoreAvailable();
     }
 
     @Override
@@ -86,10 +86,19 @@ public final class PowerShellConsoleProvider implements ConsoleProperties.Spi {
         return Utils.execToString(onError, getExecutable(), "-command", command);
     }
 
+    private boolean isCoreAvailable() {
+        try {
+            return WhichWrapper.isAvailable(CORE_EXECUTABLE);
+        } catch (IOException ex) {
+            onError.accept(ex, new String[0]);
+            return false;
+        }
+    }
+
     private static String getExecutable() {
         return OS.NAME.equals(OS.Name.WINDOWS) ? WIN_EXECUTABLE : CORE_EXECUTABLE;
     }
 
-    static final String WIN_EXECUTABLE = "powershell";
-    static final String CORE_EXECUTABLE = "pwsh";
+    private static final String WIN_EXECUTABLE = "powershell";
+    private static final String CORE_EXECUTABLE = "pwsh";
 }

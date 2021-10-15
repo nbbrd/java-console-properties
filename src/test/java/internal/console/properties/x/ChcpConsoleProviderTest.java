@@ -18,12 +18,10 @@ package internal.console.properties.x;
 
 import nbbrd.console.properties.ConsoleProperties;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
 import java.nio.charset.Charset;
 import java.util.ServiceLoader;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
 import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
@@ -49,23 +47,18 @@ public class ChcpConsoleProviderTest {
     }
 
     @Test
-    @EnabledOnOs(OS.WINDOWS)
-    public void testIfAvailable() {
-        ChcpConsoleProvider x = new ChcpConsoleProvider();
-        assertThat(x.isAvailable()).isTrue();
-        assertThat(x.getStdInEncodingOrNull()).isNotNull();
-        assertThat(x.getStdOutEncodingOrNull()).isNotNull();
-        assertThat(x.getColumns()).isEqualTo(UNKNOWN_COLUMNS);
-        assertThat(x.getRows()).isEqualTo(UNKNOWN_ROWS);
-    }
-
-    @Test
-    @DisabledOnOs(OS.WINDOWS)
-    public void testIfUnavailable() {
-        ChcpConsoleProvider x = new ChcpConsoleProvider();
-        assertThat(x.isAvailable()).isFalse();
-        assertThat(x.getStdInEncodingOrNull()).isNull();
-        assertThat(x.getStdOutEncodingOrNull()).isNull();
+    public void testAll() {
+        AtomicInteger errors = new AtomicInteger();
+        ChcpConsoleProvider x = new ChcpConsoleProvider((ex, cmd) -> errors.incrementAndGet());
+        if (x.isAvailable()) {
+            assertThat(x.getStdInEncodingOrNull()).isNotNull();
+            assertThat(x.getStdOutEncodingOrNull()).isNotNull();
+            assertThat(errors).hasValue(0);
+        } else {
+            assertThat(x.getStdInEncodingOrNull()).isNull();
+            assertThat(x.getStdOutEncodingOrNull()).isNull();
+            assertThat(errors).hasValue(2);
+        }
         assertThat(x.getColumns()).isEqualTo(UNKNOWN_COLUMNS);
         assertThat(x.getRows()).isEqualTo(UNKNOWN_ROWS);
     }

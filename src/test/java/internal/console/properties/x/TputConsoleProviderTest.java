@@ -46,6 +46,7 @@ public class TputConsoleProviderTest {
         if (x.isAvailable()) {
             assertThat(x.getColumns()).isGreaterThan(0);
             assertThat(x.getRows()).isGreaterThan(0);
+            assertThat(errors).hasValue(0);
         } else {
             assertThat(x.getColumns()).isEqualTo(UNKNOWN_COLUMNS);
             assertThat(x.getRows()).isEqualTo(UNKNOWN_ROWS);

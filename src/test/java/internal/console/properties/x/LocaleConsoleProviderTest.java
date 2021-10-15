@@ -49,6 +49,7 @@ public class LocaleConsoleProviderTest {
         if (x.isAvailable()) {
             assertThat(x.getStdInEncodingOrNull()).isNotNull();
             assertThat(x.getStdOutEncodingOrNull()).isNotNull();
+            assertThat(errors).hasValue(0);
         } else {
             assertThat(x.getStdInEncodingOrNull()).isNull();
             assertThat(x.getStdOutEncodingOrNull()).isNull();
