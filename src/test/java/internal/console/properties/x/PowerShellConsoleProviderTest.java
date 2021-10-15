@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
-import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -41,7 +39,7 @@ public class PowerShellConsoleProviderTest {
     public void testIfUnavailable() {
         AtomicInteger errors = new AtomicInteger();
         PowerShellConsoleProvider x = new PowerShellConsoleProvider((ex, cmd) -> errors.incrementAndGet());
-        if (x.isAvailable()) {
+        if (x.isAvailable() && x.getExecutable() != null) {
             assertThat(x.getStdInEncodingOrNull()).isNotNull();
             assertThat(x.getStdOutEncodingOrNull()).isNotNull();
             assertThat(x.getColumns()).isGreaterThan(0);

@@ -38,13 +38,16 @@ public final class PowerShellConsoleProvider implements ConsoleProperties.Spi {
     @lombok.NonNull
     private final BiConsumer<IOException, String[]> onError;
 
+    @lombok.Getter(lazy = true)
+    private final String executable = initExecutable();
+
     public PowerShellConsoleProvider() {
         this(Utils::logCommandException);
     }
 
     @Override
     public boolean isAvailable() {
-        return OS.NAME.equals(OS.Name.WINDOWS) || isCoreAvailable();
+        return true;
     }
 
     @Override
@@ -83,20 +86,24 @@ public final class PowerShellConsoleProvider implements ConsoleProperties.Spi {
     }
 
     private Optional<String> execPowerShell(String command) {
-        return Utils.execToString(onError, getExecutable(), "-command", command);
+        String powershell = getExecutable();
+        return powershell != null
+                ? Utils.execToString(onError, powershell, "-command", command)
+                : Optional.empty();
     }
 
-    private boolean isCoreAvailable() {
-        try {
-            return WhichWrapper.isAvailable(CORE_EXECUTABLE);
-        } catch (IOException ex) {
-            onError.accept(ex, new String[0]);
-            return false;
+    private String initExecutable() {
+        if (OS.NAME.equals(OS.Name.WINDOWS)) {
+            return WIN_EXECUTABLE;
         }
-    }
-
-    private static String getExecutable() {
-        return OS.NAME.equals(OS.Name.WINDOWS) ? WIN_EXECUTABLE : CORE_EXECUTABLE;
+        try {
+            if (WhichWrapper.isAvailable(CORE_EXECUTABLE)) {
+                return CORE_EXECUTABLE;
+            }
+        } catch (IOException ex) {
+            onError.accept(ex, new String[]{"which"});
+        }
+        return null;
     }
 
     private static final String WIN_EXECUTABLE = "powershell";
