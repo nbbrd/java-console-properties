@@ -4,6 +4,9 @@ import com.github.tuupertunut.powershelllibjava.PowerShell;
 import com.github.tuupertunut.powershelllibjava.PowerShellExecutionException;
 import nbbrd.picocsv.Csv;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -16,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assumptions.assumeThat;
 
 public class ExcelCsvTest {
 
@@ -63,18 +65,13 @@ public class ExcelCsvTest {
     }
 
     @Test
+    @EnabledOnOs(OS.WINDOWS)
+    @EnabledIf("isExcelInstalled")
     public void testExcelApplication() throws IOException, PowerShellExecutionException {
-        assumeThat(isWindows()).isTrue();
-        assumeThat(isExcelInstalled()).isTrue();
-
         File source = createSource(xl);
         File target = createTarget(source);
 
         assertThat(target).hasSameTextualContentAs(source, xl.getEncoding());
-    }
-
-    private static boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
     private static boolean isExcelInstalled() throws IOException, PowerShellExecutionException {

@@ -30,7 +30,7 @@ import java.util.logging.Level;
  */
 @lombok.extern.java.Log
 @lombok.experimental.UtilityClass
-class Utils {
+public class Utils {
 
     static final String MSYSTEM_ENV = "MSYSTEM";
     static final String TERM_ENV = "TERM";
@@ -55,7 +55,7 @@ class Utils {
     }
 
     @FunctionalInterface
-    interface ExternalCommand {
+    public interface ExternalCommand {
 
         @NonNull
         Optional<String> exec(@NonNull String... command);
