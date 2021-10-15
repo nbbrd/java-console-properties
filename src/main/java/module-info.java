@@ -15,6 +15,8 @@
  * limitations under the Licence.
  */
 
+import internal.console.properties.x.Posix;
+
 module nbbrd.console.properties {
     requires static lombok;
     requires static nbbrd.service;
@@ -40,7 +42,7 @@ module nbbrd.console.properties {
     provides nbbrd.console.properties.ConsoleProperties.Spi with
             internal.console.properties.x.JdkProperty,
             internal.console.properties.x.CommandPrompt,
-            internal.console.properties.x.MingwXterm;
+            Posix;
 
     uses nbbrd.console.picocli.Profile.Spi;
     provides nbbrd.console.picocli.Profile.Spi with

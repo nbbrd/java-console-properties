@@ -35,21 +35,14 @@ public class Utils {
     static final String MSYSTEM_ENV = "MSYSTEM";
     static final String TERM_ENV = "TERM";
 
-    static boolean isWindows(UnaryOperator<String> sys) {
-        String result = sys.apply("os.name");
-        return result != null && result.startsWith("Windows");
-    }
-
-    static boolean isCygwin(UnaryOperator<String> sys, UnaryOperator<String> env) {
-        return isWindows(sys)
-                && env.apply("PWD") != null
+    static boolean isCygwin(UnaryOperator<String> env) {
+        return env.apply("PWD") != null
                 && env.apply("PWD").startsWith("/")
                 && !"cygwin".equals(env.apply("TERM"));
     }
 
-    static boolean isMingwXterm(UnaryOperator<String> sys, UnaryOperator<String> env) {
-        return isWindows(sys)
-                && env.apply(MSYSTEM_ENV) != null
+    static boolean isMingwXterm(UnaryOperator<String> env) {
+        return env.apply(MSYSTEM_ENV) != null
                 && env.apply(MSYSTEM_ENV).startsWith("MINGW")
                 && "xterm".equals(env.apply(TERM_ENV));
     }

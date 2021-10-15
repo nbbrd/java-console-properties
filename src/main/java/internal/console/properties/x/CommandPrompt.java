@@ -18,10 +18,10 @@ package internal.console.properties.x;
 
 import lombok.AccessLevel;
 import nbbrd.console.properties.ConsoleProperties;
+import nbbrd.io.sys.OS;
 import nbbrd.service.ServiceProvider;
 
 import java.nio.charset.Charset;
-import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,18 +33,15 @@ import java.util.regex.Pattern;
 public final class CommandPrompt implements ConsoleProperties.Spi {
 
     @lombok.NonNull
-    private final UnaryOperator<String> sys;
-
-    @lombok.NonNull
     private final Utils.ExternalCommand cmd;
 
     public CommandPrompt() {
-        this(System::getProperty, Utils.ExternalCommand.getDefault());
+        this(Utils.ExternalCommand.getDefault());
     }
 
     @Override
     public boolean isAvailable() {
-        return Utils.isWindows(sys);
+        return OS.NAME.equals(OS.Name.WINDOWS);
     }
 
     @Override
@@ -78,6 +75,7 @@ public final class CommandPrompt implements ConsoleProperties.Spi {
 
     private static final Pattern CHCP_PATTERN = Pattern.compile("\\d+", Pattern.MULTILINE);
 
+    @SuppressWarnings("InjectedReferences")
     static Charset parseChcp(String chcp) {
         Matcher m = CHCP_PATTERN.matcher(chcp);
         if (m.find()) {

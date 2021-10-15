@@ -35,6 +35,10 @@
         <url>http://github.com/nbbrd/java-console-properties/tree/master</url>
     </scm>
 
+    <properties>
+        <java-io-util.version>0.0.15</java-io-util.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -78,6 +82,29 @@
 
         <!-- compile and runtime -->
         <dependency>
+            <groupId>com.github.nbbrd.java-io-util</groupId>
+            <artifactId>java-io-base</artifactId>
+            <version>${java-io-util.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.nbbrd.java-io-util</groupId>
+            <artifactId>java-io-win</artifactId>
+            <version>${java-io-util.version}</version>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <optional>true</optional>
@@ -87,18 +114,6 @@
             <artifactId>picocsv</artifactId>
             <version>2.1.0</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-io-util</groupId>
-            <artifactId>java-io-win</artifactId>
-            <version>0.0.15</version>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.checkerframework</groupId>
-                    <artifactId>checker-qual</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

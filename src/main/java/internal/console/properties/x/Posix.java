@@ -18,34 +18,37 @@ package internal.console.properties.x;
 
 import lombok.AccessLevel;
 import nbbrd.console.properties.ConsoleProperties;
+import nbbrd.io.sys.OS;
 import nbbrd.service.ServiceProvider;
 
 import java.nio.charset.Charset;
-import java.util.function.UnaryOperator;
 
 /**
  * @author Philippe Charles
  */
 @ServiceProvider(ConsoleProperties.Spi.class)
 @lombok.AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MingwXterm implements ConsoleProperties.Spi {
-
-    @lombok.NonNull
-    private final UnaryOperator<String> sys;
-
-    @lombok.NonNull
-    private final UnaryOperator<String> env;
+public final class Posix implements ConsoleProperties.Spi {
 
     @lombok.NonNull
     private final Utils.ExternalCommand cmd;
 
-    public MingwXterm() {
-        this(System::getProperty, System::getenv, Utils.ExternalCommand.getDefault());
+    public Posix() {
+        this(Utils.ExternalCommand.getDefault());
     }
 
     @Override
     public boolean isAvailable() {
-        return Utils.isMingwXterm(sys, env);
+        switch (OS.NAME) {
+            case MACOS:
+            case LINUX:
+            case SOLARIS:
+                return true;
+            case WINDOWS:
+                return Utils.isMingwXterm(System::getenv);
+            default:
+                return false;
+        }
     }
 
     @Override
