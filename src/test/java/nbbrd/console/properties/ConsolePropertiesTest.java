@@ -17,16 +17,10 @@
 package nbbrd.console.properties;
 
 import _test.Sample;
-import internal.console.properties.x.Utils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.OS;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
-import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
-import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -42,14 +36,6 @@ public class ConsolePropertiesTest {
         assertThat(unknownFirst.getStdInEncoding()).contains(StandardCharsets.US_ASCII);
         assertThat(firstSecond.getStdInEncoding()).contains(StandardCharsets.US_ASCII);
         assertThat(secondFirst.getStdInEncoding()).contains(StandardCharsets.ISO_8859_1);
-
-        assertThat(main.getStdInEncoding().orElse(null))
-                .isEqualTo(
-                        execPowerShell("[Console]::InputEncoding.WebName")
-                                .map(String::trim)
-                                .map(Charset::forName)
-                                .orElse(null)
-                );
     }
 
     @Test
@@ -60,14 +46,6 @@ public class ConsolePropertiesTest {
         assertThat(unknownFirst.getStdOutEncoding()).contains(StandardCharsets.UTF_8);
         assertThat(firstSecond.getStdOutEncoding()).contains(StandardCharsets.UTF_8);
         assertThat(secondFirst.getStdOutEncoding()).contains(StandardCharsets.UTF_16);
-
-        assertThat(main.getStdOutEncoding().orElse(null))
-                .isEqualTo(
-                        execPowerShell("[Console]::OutputEncoding.WebName")
-                                .map(String::trim)
-                                .map(Charset::forName)
-                                .orElse(null)
-                );
     }
 
     @Test
@@ -78,13 +56,6 @@ public class ConsolePropertiesTest {
         assertThat(unknownFirst.getRows()).hasValue(30);
         assertThat(firstSecond.getRows()).hasValue(30);
         assertThat(secondFirst.getRows()).hasValue(70);
-
-        assertThat(main.getRows().orElse(UNKNOWN_ROWS))
-                .isEqualTo(
-                        execPowerShell("(Get-Host).ui.rawui.windowsize.height")
-                                .map(Integer::parseInt)
-                                .orElse(UNKNOWN_ROWS)
-                );
     }
 
     @Test
@@ -95,13 +66,15 @@ public class ConsolePropertiesTest {
         assertThat(unknownFirst.getColumns()).hasValue(120);
         assertThat(firstSecond.getColumns()).hasValue(120);
         assertThat(secondFirst.getColumns()).hasValue(40);
+    }
 
-        assertThat(main.getColumns().orElse(UNKNOWN_COLUMNS))
-                .isEqualTo(
-                        execPowerShell("(Get-Host).ui.rawui.windowsize.width")
-                                .map(Integer::parseInt)
-                                .orElse(UNKNOWN_COLUMNS)
-                );
+    @Test
+    public void testCompleteness() {
+        ConsoleProperties x = ConsoleProperties.ofServiceLoader();
+        assertThat(x.getStdInEncoding()).isPresent();
+        assertThat(x.getStdOutEncoding()).isPresent();
+        assertThat(x.getRows()).isPresent();
+        assertThat(x.getColumns()).isPresent();
     }
 
     private final ConsoleProperties empty = ConsoleProperties
@@ -135,10 +108,4 @@ public class ConsolePropertiesTest {
             .provider(Sample.SECOND)
             .provider(Sample.FIRST)
             .build();
-
-    private final ConsoleProperties main = ConsoleProperties.ofServiceLoader();
-
-    private static Optional<String> execPowerShell(String command) {
-        return Utils.ExternalCommand.getDefault().exec(OS.WINDOWS.isCurrentOs() ? "powershell" : "pwsh", "-command", command);
-    }
 }

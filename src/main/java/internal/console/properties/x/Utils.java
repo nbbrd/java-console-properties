@@ -17,11 +17,11 @@
 package internal.console.properties.x;
 
 import nbbrd.io.sys.ProcessReader;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 
@@ -30,7 +30,11 @@ import java.util.logging.Level;
  */
 @lombok.extern.java.Log
 @lombok.experimental.UtilityClass
-public class Utils {
+class Utils {
+
+    static final int QUICK_RANK = 10;
+    static final int NORMAL_RANK = 20;
+    static final int SLOW_RANK = 30;
 
     static final String MSYSTEM_ENV = "MSYSTEM";
     static final String TERM_ENV = "TERM";
@@ -44,21 +48,14 @@ public class Utils {
     static boolean isMingwXterm(UnaryOperator<String> env) {
         return env.apply(MSYSTEM_ENV) != null
                 && env.apply(MSYSTEM_ENV).startsWith("MINGW")
-                && "xterm".equals(env.apply(TERM_ENV));
+                && isXterm(env);
     }
 
-    @FunctionalInterface
-    public interface ExternalCommand {
-
-        @NonNull
-        Optional<String> exec(@NonNull String... command);
-
-        static ExternalCommand getDefault() {
-            return Utils::execToString;
-        }
+    static boolean isXterm(UnaryOperator<String> env) {
+        return "xterm".equals(env.apply(TERM_ENV));
     }
 
-    private static Optional<String> execToString(String... command) {
+    static Optional<String> execToString(BiConsumer<IOException, String[]> onError, String... command) {
         try {
             return Optional.of(ProcessReader.readToString(
                     new ProcessBuilder(command)
@@ -66,10 +63,14 @@ public class Utils {
                             .start()
             ));
         } catch (IOException ex) {
-            if (log.isLoggable(Level.WARNING)) {
-                log.log(Level.WARNING, "Failed to execute command: " + Arrays.toString(command), ex);
-            }
+            onError.accept(ex, command);
         }
         return Optional.empty();
+    }
+
+    static void logCommandException(IOException ex, String[] command) {
+        if (log.isLoggable(Level.WARNING)) {
+            log.log(Level.WARNING, "Failed to execute command: " + Arrays.toString(command), ex);
+        }
     }
 }

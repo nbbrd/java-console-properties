@@ -21,66 +21,71 @@ import nbbrd.console.properties.ConsoleProperties;
 import nbbrd.io.sys.OS;
 import nbbrd.service.ServiceProvider;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+
+import static internal.console.properties.x.Utils.NORMAL_RANK;
 
 /**
  * @author Philippe Charles
  */
 @ServiceProvider(ConsoleProperties.Spi.class)
-@lombok.AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommandPrompt implements ConsoleProperties.Spi {
+@lombok.AllArgsConstructor(access = AccessLevel.PACKAGE)
+public final class TputConsoleProvider implements ConsoleProperties.Spi {
 
     @lombok.NonNull
-    private final Utils.ExternalCommand cmd;
+    private final BiConsumer<IOException, String[]> onError;
 
-    public CommandPrompt() {
-        this(Utils.ExternalCommand.getDefault());
+    public TputConsoleProvider() {
+        this(Utils::logCommandException);
     }
 
     @Override
     public boolean isAvailable() {
-        return OS.NAME.equals(OS.Name.WINDOWS);
+        switch (OS.NAME) {
+            case MACOS:
+            case LINUX:
+            case SOLARIS:
+                return Utils.isXterm(System::getenv);
+            case WINDOWS:
+                return Utils.isMingwXterm(System::getenv);
+            default:
+                return false;
+        }
     }
 
     @Override
     public int getRank() {
-        return 30;
+        return NORMAL_RANK;
     }
 
     @Override
     public Charset getStdInEncodingOrNull() {
-        return getChcpEncodingOrNull();
+        return null;
     }
 
     @Override
     public Charset getStdOutEncodingOrNull() {
-        return getChcpEncodingOrNull();
+        return null;
     }
 
     @Override
     public int getColumns() {
-        return cmd.exec("powershell", "-command", "(Get-Host).ui.rawui.windowsize.width").map(Integer::valueOf).orElse(UNKNOWN_COLUMNS);
+        return execTput("cols")
+                .map(Integer::valueOf)
+                .orElse(UNKNOWN_COLUMNS);
     }
 
     @Override
     public int getRows() {
-        return cmd.exec("powershell", "-command", "(Get-Host).ui.rawui.windowsize.height").map(Integer::valueOf).orElse(UNKNOWN_ROWS);
+        return execTput("lines")
+                .map(Integer::valueOf)
+                .orElse(UNKNOWN_ROWS);
     }
 
-    private Charset getChcpEncodingOrNull() {
-        return cmd.exec("cmd", "/C", "chcp").map(CommandPrompt::parseChcp).orElse(null);
-    }
-
-    private static final Pattern CHCP_PATTERN = Pattern.compile("\\d+", Pattern.MULTILINE);
-
-    @SuppressWarnings("InjectedReferences")
-    static Charset parseChcp(String chcp) {
-        Matcher m = CHCP_PATTERN.matcher(chcp);
-        if (m.find()) {
-            return Charset.forName("cp" + m.group());
-        }
-        throw new IllegalArgumentException("Invalid chcp result: '" + chcp + "'");
+    private Optional<String> execTput(String command) {
+        return Utils.execToString(onError, "tput", command);
     }
 }

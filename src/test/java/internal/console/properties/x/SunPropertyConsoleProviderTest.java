@@ -23,33 +23,41 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import java.util.ServiceLoader;
 
-import static internal.console.properties.x.JdkProperty.UNSUPPORTED_STDOUT_ENCODING;
+import static internal.console.properties.x.SunPropertyConsoleProvider.UNSUPPORTED_STDOUT_ENCODING;
+import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
+import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Philippe Charles
  */
-public class JdkPropertyTest {
+public class SunPropertyConsoleProviderTest {
 
     @Test
     public void testRegistration() {
         assertThat(ServiceLoader.load(ConsoleProperties.Spi.class))
-                .anyMatch(JdkProperty.class::isInstance);
+                .anyMatch(SunPropertyConsoleProvider.class::isInstance);
     }
 
     @Test
     @EnabledIfSystemProperty(named = UNSUPPORTED_STDOUT_ENCODING, matches = "^(?!\\s*$).+")
     public void testIfAvailable() {
-        JdkProperty x = new JdkProperty();
+        SunPropertyConsoleProvider x = new SunPropertyConsoleProvider();
+        assertThat(x.isAvailable()).isTrue();
         assertThat(x.getStdInEncodingOrNull()).isNotNull();
         assertThat(x.getStdOutEncodingOrNull()).isNotNull();
+        assertThat(x.getColumns()).isEqualTo(UNKNOWN_COLUMNS);
+        assertThat(x.getRows()).isEqualTo(UNKNOWN_ROWS);
     }
 
     @Test
     @DisabledIfSystemProperty(named = UNSUPPORTED_STDOUT_ENCODING, matches = "^(?!\\s*$).+")
     public void testIfUnavailable() {
-        JdkProperty x = new JdkProperty();
+        SunPropertyConsoleProvider x = new SunPropertyConsoleProvider();
+        assertThat(x.isAvailable()).isTrue();
         assertThat(x.getStdInEncodingOrNull()).isNull();
         assertThat(x.getStdOutEncodingOrNull()).isNull();
+        assertThat(x.getColumns()).isEqualTo(UNKNOWN_COLUMNS);
+        assertThat(x.getRows()).isEqualTo(UNKNOWN_ROWS);
     }
 }

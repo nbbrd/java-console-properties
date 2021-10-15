@@ -15,8 +15,6 @@
  * limitations under the Licence.
  */
 
-import internal.console.properties.x.Posix;
-
 module nbbrd.console.properties {
     requires static lombok;
     requires static nbbrd.service;
@@ -26,10 +24,10 @@ module nbbrd.console.properties {
     // optional dependencies
     requires static info.picocli;
     requires static nbbrd.picocsv;
-    requires static nbbrd.io.base;
     requires static nbbrd.io.win;
     requires static org.yaml.snakeyaml;
 
+    requires nbbrd.io.base;
     requires java.logging;
 
     exports nbbrd.console.properties;
@@ -40,9 +38,11 @@ module nbbrd.console.properties {
 
     uses nbbrd.console.properties.ConsoleProperties.Spi;
     provides nbbrd.console.properties.ConsoleProperties.Spi with
-            internal.console.properties.x.JdkProperty,
-            internal.console.properties.x.CommandPrompt,
-            Posix;
+            internal.console.properties.x.ChcpConsoleProvider,
+            internal.console.properties.x.PowerShellConsoleProvider,
+            internal.console.properties.x.LocaleConsoleProvider,
+            internal.console.properties.x.SunPropertyConsoleProvider,
+            internal.console.properties.x.TputConsoleProvider;
 
     uses nbbrd.console.picocli.Profile.Spi;
     provides nbbrd.console.picocli.Profile.Spi with

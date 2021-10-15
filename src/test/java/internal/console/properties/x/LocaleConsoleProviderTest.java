@@ -24,43 +24,37 @@ import org.junit.jupiter.api.condition.OS;
 
 import java.nio.charset.Charset;
 import java.util.ServiceLoader;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
+import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * @author Philippe Charles
  */
-public class CommandPromptTest {
+public class LocaleConsoleProviderTest {
 
     @Test
     public void testRegistration() {
         assertThat(ServiceLoader.load(ConsoleProperties.Spi.class))
-                .anyMatch(CommandPrompt.class::isInstance);
+                .anyMatch(LocaleConsoleProvider.class::isInstance);
     }
 
     @Test
-    public void testParseChcp() {
-        assertThat(CommandPrompt.parseChcp("Active code page: 437")).isEqualTo(Charset.forName("IBM437"));
-        assertThatIllegalArgumentException().isThrownBy(() -> CommandPrompt.parseChcp(""));
-        assertThatIllegalArgumentException().isThrownBy(() -> CommandPrompt.parseChcp("Active code page: "));
-    }
-
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    public void testIfAvailable() {
-        CommandPrompt x = new CommandPrompt();
-        assertThat(x.isAvailable()).isTrue();
-        assertThat(x.getStdInEncodingOrNull()).isNotNull();
-        assertThat(x.getStdOutEncodingOrNull()).isNotNull();
-        assertThat(x.getColumns()).isGreaterThan(0);
-        assertThat(x.getRows()).isGreaterThan(0);
-    }
-
-    @Test
-    @DisabledOnOs(OS.WINDOWS)
-    public void testIfUnavailable() {
-        CommandPrompt x = new CommandPrompt();
-        assertThat(x.isAvailable()).isFalse();
+    public void testAll() {
+        AtomicInteger errors = new AtomicInteger();
+        LocaleConsoleProvider x = new LocaleConsoleProvider((ex, cmd) -> errors.incrementAndGet());
+        if (x.isAvailable()) {
+            assertThat(x.getStdInEncodingOrNull()).isNotNull();
+            assertThat(x.getStdOutEncodingOrNull()).isNotNull();
+        } else {
+            assertThat(x.getStdInEncodingOrNull()).isNull();
+            assertThat(x.getStdOutEncodingOrNull()).isNull();
+            assertThat(errors).hasValue(2);
+        }
+        assertThat(x.getColumns()).isEqualTo(UNKNOWN_COLUMNS);
+        assertThat(x.getRows()).isEqualTo(UNKNOWN_ROWS);
     }
 }

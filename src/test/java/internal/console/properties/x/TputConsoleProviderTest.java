@@ -20,28 +20,36 @@ import nbbrd.console.properties.ConsoleProperties;
 import org.junit.jupiter.api.Test;
 
 import java.util.ServiceLoader;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_COLUMNS;
+import static nbbrd.console.properties.ConsoleProperties.Spi.UNKNOWN_ROWS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Philippe Charles
  */
-public class PosixTest {
+public class TputConsoleProviderTest {
 
     @Test
     public void testRegistration() {
         assertThat(ServiceLoader.load(ConsoleProperties.Spi.class))
-                .anyMatch(Posix.class::isInstance);
+                .anyMatch(TputConsoleProvider.class::isInstance);
     }
 
     @Test
     public void testAll() {
-        Posix x = new Posix();
+        AtomicInteger errors = new AtomicInteger();
+        TputConsoleProvider x = new TputConsoleProvider((ex, cmd) -> errors.incrementAndGet());
+        assertThat(x.getStdInEncodingOrNull()).isNull();
+        assertThat(x.getStdOutEncodingOrNull()).isNull();
         if (x.isAvailable()) {
-            assertThat(x.getStdInEncodingOrNull()).isNotNull();
-            assertThat(x.getStdOutEncodingOrNull()).isNotNull();
             assertThat(x.getColumns()).isGreaterThan(0);
             assertThat(x.getRows()).isGreaterThan(0);
+        } else {
+            assertThat(x.getColumns()).isEqualTo(UNKNOWN_COLUMNS);
+            assertThat(x.getRows()).isEqualTo(UNKNOWN_ROWS);
+            assertThat(errors).hasValue(2);
         }
     }
 }

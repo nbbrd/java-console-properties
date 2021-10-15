@@ -16,26 +16,18 @@
  */
 package internal.console.properties.x;
 
-import lombok.AccessLevel;
 import nbbrd.console.properties.ConsoleProperties;
 import nbbrd.service.ServiceProvider;
 
 import java.nio.charset.Charset;
-import java.util.function.UnaryOperator;
+
+import static internal.console.properties.x.Utils.QUICK_RANK;
 
 /**
  * @author Philippe Charles
  */
 @ServiceProvider(ConsoleProperties.Spi.class)
-@lombok.AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdkProperty implements ConsoleProperties.Spi {
-
-    @lombok.NonNull
-    private final UnaryOperator<String> sys;
-
-    public JdkProperty() {
-        this(System::getProperty);
-    }
+public final class SunPropertyConsoleProvider implements ConsoleProperties.Spi {
 
     @Override
     public boolean isAvailable() {
@@ -44,7 +36,7 @@ public final class JdkProperty implements ConsoleProperties.Spi {
 
     @Override
     public int getRank() {
-        return 10;
+        return QUICK_RANK;
     }
 
     @Override
@@ -67,8 +59,8 @@ public final class JdkProperty implements ConsoleProperties.Spi {
         return UNKNOWN_ROWS;
     }
 
-    private Charset getPropertyEncodingOrNull(String property) {
-        String result = sys.apply(property);
+    private static Charset getPropertyEncodingOrNull(String property) {
+        String result = System.getProperty(property);
         return result != null ? Charset.forName(result) : null;
     }
 

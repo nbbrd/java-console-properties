@@ -16,67 +16,66 @@
  */
 package internal.console.properties.x;
 
-import lombok.AccessLevel;
 import nbbrd.console.properties.ConsoleProperties;
 import nbbrd.io.sys.OS;
 import nbbrd.service.ServiceProvider;
 
 import java.nio.charset.Charset;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static internal.console.properties.x.Utils.NORMAL_RANK;
 
 /**
  * @author Philippe Charles
  */
 @ServiceProvider(ConsoleProperties.Spi.class)
-@lombok.AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Posix implements ConsoleProperties.Spi {
-
-    @lombok.NonNull
-    private final Utils.ExternalCommand cmd;
-
-    public Posix() {
-        this(Utils.ExternalCommand.getDefault());
-    }
+public final class ChcpConsoleProvider implements ConsoleProperties.Spi {
 
     @Override
     public boolean isAvailable() {
-        switch (OS.NAME) {
-            case MACOS:
-            case LINUX:
-            case SOLARIS:
-                return true;
-            case WINDOWS:
-                return Utils.isMingwXterm(System::getenv);
-            default:
-                return false;
-        }
+        return OS.NAME.equals(OS.Name.WINDOWS) && !Utils.isMingwXterm(System::getenv);
     }
 
     @Override
     public int getRank() {
-        return 20;
+        return NORMAL_RANK;
     }
 
     @Override
     public Charset getStdInEncodingOrNull() {
-        return getLocaleEncodingOrNull();
+        return getChcpEncodingOrNull();
     }
 
     @Override
     public Charset getStdOutEncodingOrNull() {
-        return getLocaleEncodingOrNull();
+        return getChcpEncodingOrNull();
     }
 
     @Override
     public int getColumns() {
-        return cmd.exec("tput", "cols").map(Integer::valueOf).orElse(UNKNOWN_COLUMNS);
+        return UNKNOWN_COLUMNS;
     }
 
     @Override
     public int getRows() {
-        return cmd.exec("tput", "lines").map(Integer::valueOf).orElse(UNKNOWN_ROWS);
+        return UNKNOWN_ROWS;
     }
 
-    private Charset getLocaleEncodingOrNull() {
-        return cmd.exec("locale", "charmap").map(Charset::forName).orElse(null);
+    private Charset getChcpEncodingOrNull() {
+        return Utils.execToString(Utils::logCommandException, "cmd", "/C", "chcp")
+                .map(ChcpConsoleProvider::parseChcp)
+                .orElse(null);
+    }
+
+    private static final Pattern CHCP_PATTERN = Pattern.compile("\\d+", Pattern.MULTILINE);
+
+    @SuppressWarnings("InjectedReferences")
+    static Charset parseChcp(String chcp) {
+        Matcher m = CHCP_PATTERN.matcher(chcp);
+        if (m.find()) {
+            return Charset.forName("cp" + m.group());
+        }
+        throw new IllegalArgumentException("Invalid chcp result: '" + chcp + "'");
     }
 }
