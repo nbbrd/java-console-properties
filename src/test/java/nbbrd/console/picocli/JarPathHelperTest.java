@@ -1,7 +1,7 @@
 package nbbrd.console.picocli;
 
 import nbbrd.io.sys.SystemProperties;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.FileSystems;

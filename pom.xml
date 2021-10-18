@@ -5,7 +5,7 @@
 
     <groupId>com.github.nbbrd.java-console-properties</groupId>
     <artifactId>java-console-properties</artifactId>
-    <version>1.3.3</version>
+    <version>1.3.4</version>
 
     <packaging>jar</packaging>
 
@@ -35,12 +35,28 @@
         <url>http://github.com/nbbrd/java-console-properties/tree/master</url>
     </scm>
 
+    <properties>
+        <java-io-util.version>0.0.15</java-io-util.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.8.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- compile only -->
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.18.0</version>
+            <version>3.18.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -66,20 +82,20 @@
 
         <!-- compile and runtime -->
         <dependency>
-            <groupId>info.picocli</groupId>
-            <artifactId>picocli</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.picocsv</groupId>
-            <artifactId>picocsv</artifactId>
-            <version>2.0.0</version>
-            <optional>true</optional>
+            <groupId>com.github.nbbrd.java-io-util</groupId>
+            <artifactId>java-io-base</artifactId>
+            <version>${java-io-util.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-io-util</groupId>
             <artifactId>java-io-win</artifactId>
-            <version>0.0.14</version>
+            <version>${java-io-util.version}</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -87,6 +103,17 @@
                     <artifactId>checker-qual</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.github.nbbrd.picocsv</groupId>
+            <artifactId>picocsv</artifactId>
+            <version>2.1.0</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -97,9 +124,8 @@
 
         <!-- test only -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -120,8 +146,13 @@
             <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.hakky54</groupId>
+            <artifactId>consolecaptor</artifactId>
+            <version>1.0.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
     <profiles>
         <!-- Base build java8 -->
         <profile>
@@ -148,6 +179,14 @@
                         <artifactId>maven-jar-plugin</artifactId>
                         <version>3.2.0</version>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M5</version>
+                        <configuration>
+                            <useModulePath>false</useModulePath>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -161,7 +200,7 @@
                 </property>
             </activation>
             <properties>
-                <lombok.version>1.18.20</lombok.version>
+                <lombok.version>1.18.22</lombok.version>
                 <java-service.version>1.4.0</java-service.version>
                 <java-design.version>1.1.3</java-design.version>
                 <picocli.version>4.6.1</picocli.version>

@@ -1,9 +1,8 @@
 package nbbrd.console.picocli;
 
 import nbbrd.io.sys.SystemProperties;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +19,6 @@ import static org.assertj.core.api.Assertions.*;
 
 public class ConfigHelperTest {
 
-    @Rule
-    public TemporaryFolder temp = new TemporaryFolder();
-
     @Test
     public void testFactories() {
         assertThatNullPointerException()
@@ -30,7 +26,7 @@ public class ConfigHelperTest {
     }
 
     @Test
-    public void testLoad() throws IOException {
+    public void testLoad(@TempDir Path temp) throws IOException {
         Properties context = new Properties();
         context.put(PATH_SEPARATOR, File.pathSeparator);
 
@@ -46,9 +42,9 @@ public class ConfigHelperTest {
         assertThatNullPointerException()
                 .isThrownBy(() -> helper.load(new Properties(), null));
 
-        Path systemCfg = write("systemLoad", "abc.properties", "keySystem=valueSystem");
-        Path globalCfg = write("globalLoad", "abc.properties", "keyGlobal=valueGlobal");
-        Path localCfg = write("localLoad", "abc.properties", "keyLocal=valueLocal");
+        Path systemCfg = write(temp, "systemLoad", "abc.properties", "keySystem=valueSystem");
+        Path globalCfg = write(temp, "globalLoad", "abc.properties", "keyGlobal=valueGlobal");
+        Path localCfg = write(temp, "localLoad", "abc.properties", "keyLocal=valueLocal");
 
         Function<ConfigHelper.Scope, Properties> loader = scope -> {
             Properties result = new Properties();
@@ -86,8 +82,8 @@ public class ConfigHelperTest {
                 .containsEntry("keyLocal", "valueLocal");
     }
 
-    private Path write(String folderName, String fileName, String content) throws IOException {
-        Path result = temp.newFolder(folderName).toPath().resolve(fileName);
+    private Path write(Path temp, String folderName, String fileName, String content) throws IOException {
+        Path result = Files.createDirectory(temp.resolve(folderName)).resolve(fileName);
         Files.write(result, Collections.singleton(content));
         return result;
     }

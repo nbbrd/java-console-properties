@@ -1,17 +1,17 @@
 /*
  * Copyright 2018 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package nbbrd.console.properties;
@@ -21,6 +21,7 @@ import internal.console.properties.FailsafeConsolePropertiesSpi;
 import nbbrd.design.ThreadSafe;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
+import nbbrd.service.ServiceFilter;
 import nbbrd.service.ServiceSorter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -125,6 +126,9 @@ public final class ConsoleProperties {
     )
     public interface Spi {
 
+        @ServiceFilter
+        boolean isAvailable();
+
         @ServiceSorter
         int getRank();
 
@@ -138,8 +142,8 @@ public final class ConsoleProperties {
 
         int getRows();
 
-        static int UNKNOWN_RANK = Integer.MAX_VALUE;
-        static int UNKNOWN_COLUMNS = -1;
-        static int UNKNOWN_ROWS = -1;
+        int UNKNOWN_RANK = Integer.MAX_VALUE;
+        int UNKNOWN_COLUMNS = -1;
+        int UNKNOWN_ROWS = -1;
     }
 }

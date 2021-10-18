@@ -1,28 +1,29 @@
 /*
  * Copyright 2019 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package nbbrd.console.properties;
 
 import _test.Sample;
+import org.junit.jupiter.api.Test;
+
 import java.nio.charset.StandardCharsets;
-import static org.assertj.core.api.Assertions.*;
-import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- *
  * @author Philippe Charles
  */
 public class ConsolePropertiesTest {
@@ -65,6 +66,15 @@ public class ConsolePropertiesTest {
         assertThat(unknownFirst.getColumns()).hasValue(120);
         assertThat(firstSecond.getColumns()).hasValue(120);
         assertThat(secondFirst.getColumns()).hasValue(40);
+    }
+
+    @Test
+    public void testCompleteness() {
+        ConsoleProperties x = ConsoleProperties.ofServiceLoader();
+        assertThat(x.getStdInEncoding()).isPresent();
+        assertThat(x.getStdOutEncoding()).isPresent();
+        assertThat(x.getRows()).isPresent();
+        assertThat(x.getColumns()).isPresent();
     }
 
     private final ConsoleProperties empty = ConsoleProperties

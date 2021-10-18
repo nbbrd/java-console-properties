@@ -14,12 +14,15 @@ public interface CsvOutput extends TextOutput {
 
     char getQuote();
 
+    char getComment();
+
     default Csv.Format toFormat() {
         return Csv.Format.RFC4180
                 .toBuilder()
                 .delimiter(getDelimiter())
                 .quote(getQuote())
                 .separator(getSeparator().getSeparator())
+                .comment(getComment())
                 .build();
     }
 

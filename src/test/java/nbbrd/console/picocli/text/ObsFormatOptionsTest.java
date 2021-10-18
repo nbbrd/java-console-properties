@@ -1,6 +1,6 @@
 package nbbrd.console.picocli.text;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import picocli.CommandLine.Model.CommandSpec;
 
 import java.time.LocalDate;
