@@ -32,4 +32,12 @@ public class CsvOutputOptions extends TextOutputOptions implements CsvOutput, Pr
             defaultValue = "\""
     )
     private char quote;
+
+    @CommandLine.Option(
+            names = {"--comment"},
+            paramLabel = "<char>",
+            description = "Comment character.",
+            defaultValue = "#"
+    )
+    private char comment;
 }

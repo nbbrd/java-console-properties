@@ -2,7 +2,6 @@ package nbbrd.console.picocli.csv;
 
 import nbbrd.console.picocli.Profilable;
 import nbbrd.console.picocli.text.TextInputOptions;
-import nbbrd.picocsv.Csv;
 import picocli.CommandLine;
 
 @lombok.Getter
@@ -39,4 +38,12 @@ public class CsvInputOptions extends TextInputOptions implements CsvInput, Profi
             defaultValue = "\""
     )
     private char quote;
+
+    @CommandLine.Option(
+            names = {"--comment"},
+            paramLabel = "<char>",
+            description = "Comment character.",
+            defaultValue = "#"
+    )
+    private char comment;
 }
