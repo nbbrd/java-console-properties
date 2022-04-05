@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.21.3</version>
+            <version>3.21.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -211,13 +211,10 @@
                     </dependency>
                     <dependency>
                         <groupId>com.github.nbbrd.java-service-util</groupId>
-                        <artifactId>java-service-annotation</artifactId>
+                        <artifactId>java-service-bom</artifactId>
                         <version>${java-service.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.github.nbbrd.java-service-util</groupId>
-                        <artifactId>java-service-processor</artifactId>
-                        <version>${java-service.version}</version>
+                        <type>pom</type>
+                        <scope>import</scope>
                     </dependency>
                     <dependency>
                         <groupId>com.github.nbbrd.java-design-util</groupId>
