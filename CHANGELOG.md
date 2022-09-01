@@ -13,6 +13,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Fix description of `TextInputOptions#file`
+
 ## [1.3.4] - 2021-10-18
 
 ### Fixed

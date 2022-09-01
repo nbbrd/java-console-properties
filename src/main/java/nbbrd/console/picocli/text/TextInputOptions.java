@@ -18,7 +18,7 @@ public class TextInputOptions implements TextInput, Profilable {
     @CommandLine.Option(
             names = {"-i", "--input"},
             paramLabel = "<file>",
-            description = "Output to a file instead of stdout."
+            description = "Input from a file instead of stdin."
     )
     private Path file;
 
