@@ -9,7 +9,7 @@ import static nbbrd.console.picocli.text.StdoutSink.DEFAULT_STDOUT_FILE;
 
 @lombok.Getter
 @lombok.Setter
-public class FileOutputOptions {
+public class FileOutputOptions implements FileOutput {
 
     @CommandLine.Option(
             names = {"-o", "--output"},

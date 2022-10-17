@@ -9,7 +9,7 @@ import static nbbrd.console.picocli.text.StdinSource.DEFAULT_STDIN_FILE;
 
 @lombok.Getter
 @lombok.Setter
-public class FileInputParameters {
+public class FileInputParameters implements FileInput {
 
     @CommandLine.Parameters(
             paramLabel = "<source>",

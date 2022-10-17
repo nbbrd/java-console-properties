@@ -9,7 +9,7 @@ import static nbbrd.console.picocli.text.StdinSource.DEFAULT_STDIN_FILE;
 
 @lombok.Getter
 @lombok.Setter
-public class FileInputOptions {
+public class FileInputOptions implements FileInput {
 
     @CommandLine.Option(
             names = {"-i", "--input"},
