@@ -13,7 +13,7 @@ public class FileOutputParameters implements FileOutput {
 
     @CommandLine.Parameters(
             paramLabel = "<destination>",
-            description = "Output file.",
+            description = "Output file (default: standard output).",
             defaultValue = DEFAULT_STDOUT_FILE
     )
     private Path file = Paths.get(DEFAULT_STDOUT_FILE);

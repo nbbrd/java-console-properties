@@ -14,7 +14,7 @@ public class FileInputOptions implements FileInput {
     @CommandLine.Option(
             names = {"-i", "--input"},
             paramLabel = "<file>",
-            description = "Input file.",
+            description = "Input file (default: standard input).",
             defaultValue = DEFAULT_STDIN_FILE
     )
     private Path file = Paths.get(DEFAULT_STDIN_FILE);

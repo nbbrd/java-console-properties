@@ -13,7 +13,7 @@ public class FileInputParameters implements FileInput {
 
     @CommandLine.Parameters(
             paramLabel = "<source>",
-            description = "Input file.",
+            description = "Input file (default: standard input).",
             defaultValue = DEFAULT_STDIN_FILE
     )
     private Path file = Paths.get(DEFAULT_STDIN_FILE);
