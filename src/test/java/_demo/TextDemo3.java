@@ -4,14 +4,15 @@ import nbbrd.console.picocli.FileInputParameters;
 import nbbrd.console.picocli.FileOutputParameters;
 import nbbrd.console.picocli.GzipInputOptions;
 import nbbrd.console.picocli.GzipOutputOptions;
-import nbbrd.console.picocli.text.TextInputOptions2;
-import nbbrd.console.picocli.text.TextOutputOptions2;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
+
+import static nbbrd.console.picocli.text.TextInputSupport.newTextInputSupport;
+import static nbbrd.console.picocli.text.TextOutputSupport.newTextOutputSupport;
 
 @Command(name = "TextDemo", sortOptions = false, mixinStandardHelpOptions = true)
 public class TextDemo3 implements Callable<Void> {
@@ -21,14 +22,11 @@ public class TextDemo3 implements Callable<Void> {
         FileInputParameters file;
 
         @Mixin
-        TextInputOptions2 text;
-
-        @Mixin
         GzipInputOptions gzip;
 
         String load() throws IOException {
-            text.setFileSource(gzip.asFileSource());
-            return text.readString(file.getFile());
+            return newTextInputSupport(gzip)
+                    .readString(file.getFile());
         }
     }
 
@@ -37,14 +35,11 @@ public class TextDemo3 implements Callable<Void> {
         FileOutputParameters file;
 
         @Mixin
-        TextOutputOptions2 text;
-
-        @Mixin
         GzipOutputOptions gzip;
 
-        void store(String str) throws IOException {
-            text.setFileSink(gzip.asFileSink());
-            text.writeString(file.getFile(), str);
+        void store(String text) throws IOException {
+            newTextOutputSupport(gzip)
+                    .writeString(file.getFile(), text);
         }
     }
 

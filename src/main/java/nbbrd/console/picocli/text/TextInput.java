@@ -1,7 +1,5 @@
 package nbbrd.console.picocli.text;
 
-import internal.console.picocli.text.Readers;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -31,7 +29,7 @@ public interface TextInput {
 
     default String readString() throws IOException {
         try (Reader reader = newCharReader()) {
-            return Readers.readString(reader);
+            return TextInputSupport.readString(reader);
         }
     }
 

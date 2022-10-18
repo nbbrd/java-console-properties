@@ -2,11 +2,12 @@ package nbbrd.console.picocli.csv;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+import nbbrd.console.picocli.text.CharsetSupplier;
 import nbbrd.picocsv.Csv;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -15,7 +16,7 @@ import java.nio.file.Path;
 import static _test.Values.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PicocsvOutputOptionsTest {
+public class PicocsvOutputSupportTest {
 
     @Test
     public void testNewCsvWriter() throws IOException {
@@ -29,11 +30,11 @@ public class PicocsvOutputOptionsTest {
             for (boolean append : BOOLEANS) {
                 for (boolean gzipped : BOOLEANS) {
                     for (Charset encoding : CHARSETS) {
-                        StringWriter stdout = new StringWriter();
+                        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
-                        PicocsvOutputOptions output = new PicocsvOutputOptions();
+                        PicocsvOutputSupport output = new PicocsvOutputSupport();
                         output.setAppend(append);
-                        output.setEncoding(encoding);
+                        output.setFileEncoding(CharsetSupplier.of(encoding));
                         output.setStdoutFile(stdoutFile);
                         output.setStdoutSink(() -> stdout);
                         output.setFileSink(fileSinkOf(gzipped));
@@ -61,7 +62,7 @@ public class PicocsvOutputOptionsTest {
         }
     }
 
-    private void write(PicocsvOutputOptions output, Path file, String content) throws IOException {
+    private void write(PicocsvOutputSupport output, Path file, String content) throws IOException {
         try (Csv.Writer writer = output.newCsvWriter(file)) {
             writer.writeField(content);
         }

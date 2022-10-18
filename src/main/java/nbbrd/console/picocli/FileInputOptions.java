@@ -5,11 +5,11 @@ import picocli.CommandLine;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static nbbrd.console.picocli.text.StdinSource.DEFAULT_STDIN_FILE;
+import static nbbrd.console.picocli.ByteInputSupport.DEFAULT_STDIN_FILE;
 
 @lombok.Getter
 @lombok.Setter
-public class FileInputOptions implements FileInput {
+public class FileInputOptions {
 
     @CommandLine.Option(
             names = {"-i", "--input"},

@@ -4,8 +4,8 @@ import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -15,7 +15,7 @@ import java.util.Collections;
 import static _test.Values.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TextOutputOptions2Test {
+public class TextOutputSupportTest {
 
     @Test
     public void testIsAppending() throws IOException {
@@ -31,10 +31,10 @@ public class TextOutputOptions2Test {
             Files.createFile(emptyFile);
 
             for (Charset encoding : CHARSETS) {
-                StringWriter stdout = new StringWriter();
+                ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
-                TextOutputOptions2 output = new TextOutputOptions2();
-                output.setEncoding(encoding);
+                TextOutputSupport output = new TextOutputSupport();
+                output.setFileEncoding(CharsetSupplier.of(encoding));
                 output.setStdoutFile(stdoutFile);
                 output.setStdoutSink(() -> stdout);
 
@@ -69,11 +69,11 @@ public class TextOutputOptions2Test {
             for (boolean append : BOOLEANS) {
                 for (boolean gzipped : BOOLEANS) {
                     for (Charset encoding : CHARSETS) {
-                        StringWriter stdout = new StringWriter();
+                        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
-                        TextOutputOptions2 output = new TextOutputOptions2();
+                        TextOutputSupport output = new TextOutputSupport();
                         output.setAppend(append);
-                        output.setEncoding(encoding);
+                        output.setFileEncoding(CharsetSupplier.of(encoding));
                         output.setStdoutFile(stdoutFile);
                         output.setStdoutSink(() -> stdout);
                         output.setFileSink(fileSinkOf(gzipped));

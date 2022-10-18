@@ -2,6 +2,7 @@ package nbbrd.console.picocli.csv;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+import nbbrd.console.picocli.text.CharsetSupplier;
 import nbbrd.picocsv.Csv;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ import static _test.Values.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 
-public class PicocsvInputOptionsTest {
+public class PicocsvInputSupportTest {
 
     @Test
     public void testNewCsvReader() throws IOException {
@@ -33,8 +34,8 @@ public class PicocsvInputOptionsTest {
                     write(notStdinFile, encoding, gzipped, "notStdinFile");
                     write(regularFile, encoding, gzipped, "regularFile");
 
-                    PicocsvInputOptions input = new PicocsvInputOptions();
-                    input.setEncoding(encoding);
+                    PicocsvInputSupport input = new PicocsvInputSupport();
+                    input.setFileEncoding(CharsetSupplier.of(encoding));
                     input.setStdinFile(stdinFile);
                     input.setStdinSource(stdinSourceOf("stdinFile"));
                     input.setFileSource(fileSourceOf(gzipped));
@@ -59,7 +60,7 @@ public class PicocsvInputOptionsTest {
         }
     }
 
-    private String[][] read(PicocsvInputOptions input, Path file) throws IOException {
+    private String[][] read(PicocsvInputSupport input, Path file) throws IOException {
         try (Csv.Reader reader = input.newCsvReader(file)) {
             return readAll(reader);
         }

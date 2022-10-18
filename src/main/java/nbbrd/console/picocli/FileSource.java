@@ -4,8 +4,6 @@ import nbbrd.io.function.IOUnaryOperator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -13,13 +11,13 @@ import java.nio.file.Path;
 @FunctionalInterface
 public interface FileSource {
 
-    ReadableByteChannel newByteChannel(Path file, OpenOption... options) throws IOException;
+    InputStream newInputStream(Path file, OpenOption... options) throws IOException;
 
-    static FileSource getDefault() {
-        return Files::newByteChannel;
+    default FileSource andThen(IOUnaryOperator<InputStream> mapper) {
+        return (file, options) -> mapper.applyWithIO(newInputStream(file, options));
     }
 
-    static FileSource of(IOUnaryOperator<InputStream> mapper) {
-        return (file, options) -> Channels.newChannel(mapper.applyWithIO(Files.newInputStream(file, options)));
+    static FileSource getDefault() {
+        return Files::newInputStream;
     }
 }

@@ -5,11 +5,11 @@ import picocli.CommandLine;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static nbbrd.console.picocli.text.StdoutSink.DEFAULT_STDOUT_FILE;
+import static nbbrd.console.picocli.ByteOutputSupport.DEFAULT_STDOUT_FILE;
 
 @lombok.Getter
 @lombok.Setter
-public class FileOutputParameters implements FileOutput {
+public class FileOutputParameters {
 
     @CommandLine.Parameters(
             paramLabel = "<destination>",

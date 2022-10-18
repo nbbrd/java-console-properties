@@ -1,15 +1,10 @@
 package _test;
 
-import internal.console.picocli.text.Readers;
 import nbbrd.console.picocli.FileSink;
 import nbbrd.console.picocli.FileSource;
-import nbbrd.console.picocli.text.StdinSource;
+import nbbrd.console.picocli.StdinSource;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
-import java.nio.channels.Channels;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
@@ -30,26 +25,32 @@ public class Values {
     public static final List<Charset> CHARSETS = unmodifiableList(asList(US_ASCII, UTF_8));
 
     public static void write(Path file, Charset encoding, boolean compressed, String content) throws IOException {
-        try (Writer writer = Channels.newWriter(fileSinkOf(compressed).newByteChannel(file, WRITE, CREATE), encoding.name())) {
+        try (Writer writer = new OutputStreamWriter(fileSinkOf(compressed).newOutputStream(file, WRITE, CREATE), encoding)) {
             writer.append(content);
         }
     }
 
     public static String read(Path file, Charset encoding, boolean compressed) throws IOException {
-        try (Reader reader = Channels.newReader(fileSourceOf(compressed).newByteChannel(file, READ), encoding.name())) {
-            return Readers.readString(reader);
+        try (Reader reader = new InputStreamReader(fileSourceOf(compressed).newInputStream(file, READ), encoding)) {
+            StringBuilder result = new StringBuilder();
+            char[] buffer = new char[8 * 1024];
+            int readCount = 0;
+            while ((readCount = reader.read(buffer)) != -1) {
+                result.append(buffer, 0, readCount);
+            }
+            return result.toString();
         }
     }
 
     public static StdinSource stdinSourceOf(String content) {
-        return () -> new StringReader(content);
+        return () -> new ByteArrayInputStream(content.getBytes(UTF_8));
     }
 
     public static FileSource fileSourceOf(boolean gzipped) {
-        return gzipped ? FileSource.of(GZIPInputStream::new) : FileSource.getDefault();
+        return gzipped ? FileSource.getDefault().andThen(GZIPInputStream::new) : FileSource.getDefault();
     }
 
     public static FileSink fileSinkOf(boolean gzipped) {
-        return gzipped ? FileSink.of(GZIPOutputStream::new) : FileSink.getDefault();
+        return gzipped ? FileSink.getDefault().andThen(GZIPOutputStream::new) : FileSink.getDefault();
     }
 }

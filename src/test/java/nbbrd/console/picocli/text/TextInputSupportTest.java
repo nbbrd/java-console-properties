@@ -15,7 +15,7 @@ import static _test.Values.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 
-public class TextInputOptions2Test {
+public class TextInputSupportTest {
 
     @Test
     public void testNewBufferedReader() throws IOException {
@@ -30,8 +30,8 @@ public class TextInputOptions2Test {
                     write(notStdinFile, encoding, gzipped, "notStdinFile");
                     write(regularFile, encoding, gzipped, "regularFile");
 
-                    TextInputOptions2 input = new TextInputOptions2();
-                    input.setEncoding(encoding);
+                    TextInputSupport input = new TextInputSupport();
+                    input.setFileEncoding(CharsetSupplier.of(encoding));
                     input.setStdinFile(stdinFile);
                     input.setStdinSource(stdinSourceOf("stdinFile"));
                     input.setFileSource(fileSourceOf(gzipped));

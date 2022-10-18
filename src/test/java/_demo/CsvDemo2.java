@@ -4,8 +4,6 @@ import nbbrd.console.picocli.FileInputOptions;
 import nbbrd.console.picocli.FileOutputOptions;
 import nbbrd.console.picocli.GzipInputOptions;
 import nbbrd.console.picocli.GzipOutputOptions;
-import nbbrd.console.picocli.csv.PicocsvInputOptions;
-import nbbrd.console.picocli.csv.PicocsvOutputOptions;
 import nbbrd.picocsv.Csv;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -13,6 +11,9 @@ import picocli.CommandLine.Mixin;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
+
+import static nbbrd.console.picocli.csv.PicocsvInputSupport.newPicocsvInputSupport;
+import static nbbrd.console.picocli.csv.PicocsvOutputSupport.newPicocsvOutputSupport;
 
 @Command(name = "CsvDemo", sortOptions = false, mixinStandardHelpOptions = true)
 public class CsvDemo2 implements Callable<Void> {
@@ -22,14 +23,11 @@ public class CsvDemo2 implements Callable<Void> {
         FileInputOptions file;
 
         @Mixin
-        PicocsvInputOptions csv;
-
-        @Mixin
         GzipInputOptions gzip;
 
         public Csv.Reader newCsvReader() throws IOException {
-            csv.setFileSource(gzip.asFileSource());
-            return csv.newCsvReader(file.getFile());
+            return newPicocsvInputSupport(gzip)
+                    .newCsvReader(file.getFile());
         }
     }
 
@@ -38,14 +36,11 @@ public class CsvDemo2 implements Callable<Void> {
         FileOutputOptions file;
 
         @Mixin
-        PicocsvOutputOptions csv;
-
-        @Mixin
         GzipOutputOptions gzip;
 
         public Csv.Writer newCsvWriter() throws IOException {
-            csv.setFileSink(gzip.asFileSink());
-            return csv.newCsvWriter(file.getFile());
+            return newPicocsvOutputSupport(gzip)
+                    .newCsvWriter(file.getFile());
         }
     }
 
