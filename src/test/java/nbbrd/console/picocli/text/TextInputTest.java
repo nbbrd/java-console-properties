@@ -6,15 +6,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.zip.GZIPOutputStream;
 
+import static _test.Values.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 
@@ -26,8 +24,8 @@ public class TextInputTest {
         input.setStdInStream(new ByteArrayInputStream("hello".getBytes(StandardCharsets.UTF_8)));
         input.setFile(null);
 
-        for (boolean gzipped : getBooleans()) {
-            for (Charset encoding : getCharsets()) {
+        for (boolean gzipped : BOOLEANS) {
+            for (Charset encoding : CHARSETS) {
                 input.setGzipped(gzipped);
                 input.setEncoding(null);
                 input.setStdInEncoding(encoding);
@@ -47,8 +45,8 @@ public class TextInputTest {
             input.setStdInStream(null);
             input.setFile(fs.getPath("/file.txt"));
 
-            for (boolean gzipped : getBooleans()) {
-                for (Charset encoding : getCharsets()) {
+            for (boolean gzipped : BOOLEANS) {
+                for (Charset encoding : CHARSETS) {
                     input.setGzipped(gzipped);
                     input.setEncoding(encoding);
                     input.setStdInEncoding(null);
@@ -106,27 +104,5 @@ public class TextInputTest {
         Charset encoding;
         ByteArrayInputStream stdInStream;
         Charset stdInEncoding;
-    }
-
-    private boolean[] getBooleans() {
-        return new boolean[]{false, true};
-    }
-
-    private Charset[] getCharsets() {
-        return new Charset[]{StandardCharsets.US_ASCII, StandardCharsets.UTF_8};
-    }
-
-    private static void write(Path file, Charset encoding, boolean compressed, String content) throws IOException {
-        if (!compressed) {
-            try (Writer writer = new OutputStreamWriter(Files.newOutputStream(file), encoding)) {
-                writer.append(content);
-            }
-        } else {
-            try (GZIPOutputStream gzip = new GZIPOutputStream(Files.newOutputStream(file))) {
-                try (Writer writer = new OutputStreamWriter(gzip, encoding)) {
-                    writer.append(content);
-                }
-            }
-        }
     }
 }
