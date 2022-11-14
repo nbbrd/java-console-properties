@@ -1,13 +1,11 @@
 package nbbrd.console.picocli.text;
 
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -19,24 +17,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TextOutputTest {
 
     @Test
-    public void testIsAppending() throws IOException {
-        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            TextOutputOptions options = new TextOutputOptions();
-            options.setFile(null);
-            assertThat(options.isAppending()).isFalse();
+    public void testIsAppending(@TempDir Path temp) throws IOException {
+        TextOutputOptions options = new TextOutputOptions();
+        options.setFile(null);
+        assertThat(options.isAppending()).isFalse();
 
-            options.setFile(fs.getPath("/file.txt"));
-            assertThat(options.isAppending()).isFalse();
+        options.setFile(temp.resolve("file.txt"));
+        assertThat(options.isAppending()).isFalse();
 
-            Files.createFile(options.getFile());
-            assertThat(options.isAppending()).isFalse();
+        Files.createFile(options.getFile());
+        assertThat(options.isAppending()).isFalse();
 
-            Files.write(options.getFile(), Collections.singletonList("hello"));
-            assertThat(options.isAppending()).isFalse();
+        Files.write(options.getFile(), Collections.singletonList("hello"));
+        assertThat(options.isAppending()).isFalse();
 
-            options.setAppend(true);
-            assertThat(options.isAppending()).isTrue();
-        }
+        options.setAppend(true);
+        assertThat(options.isAppending()).isTrue();
     }
 
     @Test
@@ -72,72 +68,68 @@ public class TextOutputTest {
     }
 
     @Test
-    public void testNewCharWriterOfFile() throws IOException {
-        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            MockedTextOutput output = new MockedTextOutput();
-            output.setStdOutStream(null);
-            output.setFile(fs.getPath("/file.txt"));
+    public void testNewCharWriterOfFile(@TempDir Path temp) throws IOException {
+        MockedTextOutput output = new MockedTextOutput();
+        output.setStdOutStream(null);
+        output.setFile(temp.resolve("file.txt"));
 
-            for (boolean append : getBooleans()) {
-                for (boolean gzipped : getBooleans()) {
-                    for (Charset encoding : getCharsets()) {
-                        output.setAppend(append);
-                        output.setGzipped(gzipped);
-                        output.setEncoding(encoding);
-                        output.setStdOutEncoding(null);
+        for (boolean append : getBooleans()) {
+            for (boolean gzipped : getBooleans()) {
+                for (Charset encoding : getCharsets()) {
+                    output.setAppend(append);
+                    output.setGzipped(gzipped);
+                    output.setEncoding(encoding);
+                    output.setStdOutEncoding(null);
 
-                        output.writeString("hello");
-                        assertThat(output.getFile())
-                                .describedAs("First append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
-                                .exists()
-                                .extracting(file -> read(file, encoding, gzipped))
-                                .asString()
-                                .isEqualTo("hello");
+                    output.writeString("hello");
+                    assertThat(output.getFile())
+                            .describedAs("First append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
+                            .exists()
+                            .extracting(file -> read(file, encoding, gzipped))
+                            .asString()
+                            .isEqualTo("hello");
 
-                        output.writeString(" world");
-                        assertThat(output.getFile())
-                                .describedAs("Second append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
-                                .exists()
-                                .extracting(file -> read(file, encoding, gzipped))
-                                .asString()
-                                .isEqualTo(append ? "hello world" : " world");
+                    output.writeString(" world");
+                    assertThat(output.getFile())
+                            .describedAs("Second append:%s, gzipped:%s, encoding:%s", append, gzipped, encoding)
+                            .exists()
+                            .extracting(file -> read(file, encoding, gzipped))
+                            .asString()
+                            .isEqualTo(append ? "hello world" : " world");
 
-                        Files.delete(output.getFile());
-                    }
+                    Files.delete(output.getFile());
                 }
             }
         }
     }
 
     @Test
-    public void testIsGzippedFile() throws IOException {
-        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            MockedTextOutput output = new MockedTextOutput();
+    public void testIsGzippedFile(@TempDir Path temp) throws IOException {
+        MockedTextOutput output = new MockedTextOutput();
 
-            output.setGzipped(false);
-            output.setFile(null);
-            assertThat(output.isGzippedFile()).isFalse();
+        output.setGzipped(false);
+        output.setFile(null);
+        assertThat(output.isGzippedFile()).isFalse();
 
-            output.setGzipped(true);
-            output.setFile(null);
-            assertThat(output.isGzippedFile()).isFalse();
+        output.setGzipped(true);
+        output.setFile(null);
+        assertThat(output.isGzippedFile()).isFalse();
 
-            output.setGzipped(false);
-            output.setFile(fs.getPath("/file.txt"));
-            assertThat(output.isGzippedFile()).isFalse();
+        output.setGzipped(false);
+        output.setFile(temp.resolve("file.txt"));
+        assertThat(output.isGzippedFile()).isFalse();
 
-            output.setGzipped(false);
-            output.setFile(fs.getPath("/file.txt.gz"));
-            assertThat(output.isGzippedFile()).isTrue();
+        output.setGzipped(false);
+        output.setFile(temp.resolve("file.txt.gz"));
+        assertThat(output.isGzippedFile()).isTrue();
 
-            output.setGzipped(true);
-            output.setFile(fs.getPath("/file.txt"));
-            assertThat(output.isGzippedFile()).isTrue();
+        output.setGzipped(true);
+        output.setFile(temp.resolve("file.txt"));
+        assertThat(output.isGzippedFile()).isTrue();
 
-            output.setGzipped(true);
-            output.setFile(fs.getPath("/file.txt.gz"));
-            assertThat(output.isGzippedFile()).isTrue();
-        }
+        output.setGzipped(true);
+        output.setFile(temp.resolve("file.txt.gz"));
+        assertThat(output.isGzippedFile()).isTrue();
     }
 
     @lombok.Data
