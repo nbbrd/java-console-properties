@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static _test.Values.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PicocsvOutputSupportTest {
@@ -37,11 +38,11 @@ public class PicocsvOutputSupportTest {
                     output.setFileSink(fileSinkOf(gzipped));
 
                     write(output, stdoutFile, "hello");
-                    assertThat(stdout.toString())
+                    assertThat(stdout.toString(UTF_8.name()))
                             .isEqualTo("hello");
 
                     write(output, stdoutFile, " world");
-                    assertThat(stdout.toString())
+                    assertThat(stdout.toString(UTF_8.name()))
                             .isEqualTo("hello world");
 
                     write(output, regularFile, "hello");

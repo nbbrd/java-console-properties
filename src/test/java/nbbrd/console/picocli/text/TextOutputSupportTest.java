@@ -6,11 +6,13 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 
 import static _test.Values.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TextOutputSupportTest {
@@ -49,7 +51,7 @@ public class TextOutputSupportTest {
             assertThat(output.isAppending(missingFile)).isFalse();
             assertThat(output.isAppending(emptyFile)).isFalse();
 
-            assertThat(stdout.toString()).isEmpty();
+            assertThat(stdout.toString(UTF_8.name())).isEmpty();
         }
     }
 
@@ -74,11 +76,11 @@ public class TextOutputSupportTest {
                     output.setFileSink(fileSinkOf(gzipped));
 
                     output.writeString(stdoutFile, "hello");
-                    assertThat(stdout.toString())
+                    assertThat(stdout.toString(UTF_8.name()))
                             .isEqualTo("hello");
 
                     output.writeString(stdoutFile, " world");
-                    assertThat(stdout.toString())
+                    assertThat(stdout.toString(UTF_8.name()))
                             .isEqualTo("hello world");
 
                     output.writeString(regularFile, "hello");
