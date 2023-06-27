@@ -2,6 +2,7 @@ package nbbrd.console.picocli;
 
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
+import nbbrd.service.ServiceId;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface Profile {
@@ -25,6 +26,7 @@ public interface Profile {
     )
     interface Spi {
 
+        @ServiceId
         @NonNull
         String getId();
 
