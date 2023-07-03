@@ -1,5 +1,7 @@
 package nbbrd.console.picocli.text;
 
+import nbbrd.io.Resource;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -28,7 +30,7 @@ public interface TextOutput {
             OutputStream stream = Files.newOutputStream(getFile(), CREATE, isAppend() ? APPEND : TRUNCATE_EXISTING);
             return new OutputStreamWriter(isGzippedFile() ? new GZIPOutputStream(stream) : stream, getEncoding());
         }
-        return new OutputStreamWriter(new UncloseableOutputStream(getStdOutStream()), getStdOutEncoding());
+        return new OutputStreamWriter(Resource.uncloseableOutputStream(getStdOutStream()), getStdOutEncoding());
     }
 
     default void writeString(String text) throws IOException {
@@ -49,6 +51,7 @@ public interface TextOutput {
         return hasFile() && isAppend() && Files.exists(getFile()) && Files.size(getFile()) > 0;
     }
 
+    @Deprecated
     @lombok.AllArgsConstructor
     final class UncloseableOutputStream extends OutputStream {
 

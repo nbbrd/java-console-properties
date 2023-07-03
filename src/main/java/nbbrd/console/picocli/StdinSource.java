@@ -1,6 +1,6 @@
 package nbbrd.console.picocli;
 
-import internal.console.picocli.UncloseableInputStream;
+import nbbrd.io.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +11,6 @@ public interface StdinSource {
     InputStream newInputStream() throws IOException;
 
     static StdinSource getDefault() {
-        return () -> new UncloseableInputStream(System.in);
+        return () -> Resource.uncloseableInputStream(System.in);
     }
 }
