@@ -6,6 +6,7 @@ import nbbrd.console.picocli.ByteOutputSupport;
 import nbbrd.console.picocli.CommandSupporter;
 import nbbrd.design.StaticFactoryMethod;
 import nbbrd.io.text.TextBuffers;
+import nbbrd.io.text.TextResource;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

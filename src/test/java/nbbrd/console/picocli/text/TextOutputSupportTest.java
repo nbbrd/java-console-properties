@@ -8,13 +8,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 import static _test.Values.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIOException;
 
 public class TextOutputSupportTest {
 
@@ -124,9 +122,9 @@ public class TextOutputSupportTest {
                     assertThat(read(emptyFile, encoding, gzipped))
                             .isEqualTo(" emptyContent");
 
-                    assertThatIOException()
-                            .isThrownBy(() -> x.writeString(nonExistentFile, " nonExistentContent"))
-                            .isInstanceOf(NoSuchFileException.class);
+                    x.writeString(nonExistentFile, " nonExistentContent");
+                    assertThat(read(nonExistentFile, encoding, gzipped))
+                            .isEqualTo(" nonExistentContent");
                 }
             }
         }

@@ -7,6 +7,7 @@ import nbbrd.design.StaticFactoryMethod;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -47,6 +48,16 @@ public class ByteOutputSupport {
     public @NonNull OutputStream newOutputStream(@NonNull Path file) throws IOException {
         return isStdoutFile(file)
                 ? getStdoutSink().newOutputStream()
-                : getFileSink().newOutputStream(file, WRITE, CREATE, isAppend() ? APPEND : TRUNCATE_EXISTING);
+                : getFileSink().newOutputStream(createNonExistentParents(file), getOutputOptions());
+    }
+
+    private Path createNonExistentParents(Path file) throws IOException {
+        Path parent = file.getParent();
+        if (parent != null) Files.createDirectories(parent);
+        return file;
+    }
+
+    private OpenOption[] getOutputOptions() {
+        return new OpenOption[]{WRITE, CREATE, isAppend() ? APPEND : TRUNCATE_EXISTING};
     }
 }
