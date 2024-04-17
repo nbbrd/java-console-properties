@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.4.1] - 2024-04-17
+
 ### Fixed
 
 - Fix potential bugs related to system settings
@@ -96,7 +98,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/nbbrd/java-console-properties/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/nbbrd/java-console-properties/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/nbbrd/java-console-properties/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/nbbrd/java-console-properties/compare/v1.3.4...v1.4.0
 [1.3.4]: https://github.com/nbbrd/java-console-properties/compare/v1.3.3...v1.3.4
 [1.3.3]: https://github.com/nbbrd/java-console-properties/compare/v1.3.2...v1.3.3
