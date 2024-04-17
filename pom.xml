@@ -5,7 +5,7 @@
 
     <groupId>com.github.nbbrd.java-console-properties</groupId>
     <artifactId>java-console-properties</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -39,7 +39,7 @@
     <properties>
         <!-- Java 8+ config -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2024-04-17T08:20:36Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2024-04-17T08:20:43Z</project.build.outputTimestamp>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
 
