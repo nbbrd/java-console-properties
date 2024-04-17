@@ -1,5 +1,7 @@
 package nbbrd.console.picocli.text;
 
+import nbbrd.io.Resource;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -24,7 +26,7 @@ public interface TextInput {
             InputStream stream = Files.newInputStream(getFile());
             return new InputStreamReader(isGzippedFile() ? new GZIPInputStream(stream) : stream, getEncoding());
         }
-        return new InputStreamReader(new UncloseableInputStream(getStdInStream()), getStdInEncoding());
+        return new InputStreamReader(Resource.uncloseableInputStream(getStdInStream()), getStdInEncoding());
     }
 
     default String readString() throws IOException {
@@ -41,6 +43,7 @@ public interface TextInput {
         return hasFile() && (isGzipped() || getFile().toString().toLowerCase(Locale.ROOT).endsWith(".gz"));
     }
 
+    @Deprecated
     @lombok.AllArgsConstructor
     final class UncloseableInputStream extends InputStream {
 

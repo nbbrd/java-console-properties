@@ -1,101 +1,130 @@
 package nbbrd.console.picocli.text;
 
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
+import _test.Values;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 
 import static _test.Values.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TextOutputSupportTest {
 
     @Test
-    public void testIsAppending() throws IOException {
-        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            Path stdoutFile = fs.getPath("-");
-            Path notStdinFile = fs.getPath("./-");
-            Path regularFile = fs.getPath("/regularFile.txt");
-            Path missingFile = fs.getPath("/missingFile.txt");
-            Path emptyFile = fs.getPath("/emptyFile.txt");
+    public void testIsAppending(@TempDir Path temp) throws IOException {
+        final Path stdoutFile = temp.resolve("-");
+        final Path notStdinFile = temp.resolve(".-");
+        final Path regularFile = temp.resolve("regularFile.txt");
+        final Path missingFile = temp.resolve("missingFile.txt");
+        final Path emptyFile = temp.resolve("emptyFile.txt");
+        final Path nonExistentFile = temp.resolve("nonExistentParent").resolve("nonExistentFile.txt");
 
-            Files.write(notStdinFile, Collections.singletonList("notStdinFile"));
-            Files.write(regularFile, Collections.singletonList("regularFile"));
-            Files.createFile(emptyFile);
-
+        for (boolean gzipped : BOOLEANS) {
             for (Charset encoding : CHARSETS) {
+                Files.deleteIfExists(stdoutFile);
+                Files.deleteIfExists(notStdinFile);
+                Files.deleteIfExists(regularFile);
+                Files.deleteIfExists(missingFile);
+                Files.deleteIfExists(emptyFile);
+                Files.deleteIfExists(nonExistentFile);
+                Files.deleteIfExists(nonExistentFile.getParent());
+
+                Values.write(notStdinFile, encoding, gzipped, "notStdinFile");
+                Values.write(regularFile, encoding, gzipped, "regularFile");
+                Files.createFile(emptyFile);
+
                 ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
-                TextOutputSupport output = new TextOutputSupport();
-                output.setFileEncoding(CharsetSupplier.of(encoding));
-                output.setStdoutFile(stdoutFile);
-                output.setStdoutSink(() -> stdout);
+                TextOutputSupport x = new TextOutputSupport();
+                x.setFileEncoding(CharsetSupplier.of(encoding));
+                x.setStdoutFile(stdoutFile);
+                x.setStdoutSink(() -> stdout);
+                x.setFileSink(fileSinkOf(gzipped));
 
-                output.setAppend(false);
-                assertThat(output.isAppending(stdoutFile)).isFalse();
-                assertThat(output.isAppending(notStdinFile)).isFalse();
-                assertThat(output.isAppending(regularFile)).isFalse();
-                assertThat(output.isAppending(missingFile)).isFalse();
-                assertThat(output.isAppending(emptyFile)).isFalse();
+                x.setAppend(false);
+                assertThat(x.isAppending(stdoutFile)).isFalse();
+                assertThat(x.isAppending(notStdinFile)).isFalse();
+                assertThat(x.isAppending(regularFile)).isFalse();
+                assertThat(x.isAppending(missingFile)).isFalse();
+                assertThat(x.isAppending(emptyFile)).isFalse();
+                assertThat(x.isAppending(nonExistentFile)).isFalse();
 
-                output.setAppend(true);
-                assertThat(output.isAppending(stdoutFile)).isFalse();
-                assertThat(output.isAppending(notStdinFile)).isTrue();
-                assertThat(output.isAppending(regularFile)).isTrue();
-                assertThat(output.isAppending(missingFile)).isFalse();
-                assertThat(output.isAppending(emptyFile)).isFalse();
+                x.setAppend(true);
+                assertThat(x.isAppending(stdoutFile)).isFalse();
+                assertThat(x.isAppending(notStdinFile)).isTrue();
+                assertThat(x.isAppending(regularFile)).isTrue();
+                assertThat(x.isAppending(missingFile)).isFalse();
+                assertThat(x.isAppending(emptyFile)).isFalse();
+                assertThat(x.isAppending(nonExistentFile)).isFalse();
 
-                assertThat(stdout.toString()).isEmpty();
+                assertThat(stdout.toString(UTF_8.name())).isEmpty();
             }
         }
     }
 
     @Test
-    public void testNewBufferedWriter() throws IOException {
-        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            Path stdoutFile = fs.getPath("-");
-            Path notStdinFile = fs.getPath("./-");
-            Path regularFile = fs.getPath("/regularFile.txt");
-            Path missingFile = fs.getPath("/missingFile.txt");
-            Path emptyFile = fs.getPath("/emptyFile.txt");
+    public void testNewBufferedWriter(@TempDir Path temp) throws IOException {
+        final Path stdoutFile = temp.resolve("-");
+        final Path notStdinFile = temp.resolve(".-");
+        final Path regularFile = temp.resolve("regularFile.txt");
+        final Path missingFile = temp.resolve("missingFile.txt");
+        final Path emptyFile = temp.resolve("emptyFile.txt");
+        final Path nonExistentFile = temp.resolve("nonExistentParent").resolve("nonExistentFile.txt");
 
-            for (boolean append : BOOLEANS) {
-                for (boolean gzipped : BOOLEANS) {
-                    for (Charset encoding : CHARSETS) {
-                        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        for (boolean append : BOOLEANS) {
+            for (boolean gzipped : BOOLEANS) {
+                for (Charset encoding : CHARSETS) {
+                    Files.deleteIfExists(stdoutFile);
+                    Files.deleteIfExists(notStdinFile);
+                    Files.deleteIfExists(regularFile);
+                    Files.deleteIfExists(missingFile);
+                    Files.deleteIfExists(emptyFile);
+                    Files.deleteIfExists(nonExistentFile);
+                    Files.deleteIfExists(nonExistentFile.getParent());
 
-                        TextOutputSupport output = new TextOutputSupport();
-                        output.setAppend(append);
-                        output.setFileEncoding(CharsetSupplier.of(encoding));
-                        output.setStdoutFile(stdoutFile);
-                        output.setStdoutSink(() -> stdout);
-                        output.setFileSink(fileSinkOf(gzipped));
+                    Values.write(notStdinFile, encoding, gzipped, "notStdinFile");
+                    Values.write(regularFile, encoding, gzipped, "regularFile");
+                    Files.createFile(emptyFile);
 
-                        output.writeString(stdoutFile, "hello");
-                        assertThat(stdout.toString())
-                                .isEqualTo("hello");
+                    ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
-                        output.writeString(stdoutFile, " world");
-                        assertThat(stdout.toString())
-                                .isEqualTo("hello world");
+                    TextOutputSupport x = new TextOutputSupport();
+                    x.setAppend(append);
+                    x.setFileEncoding(CharsetSupplier.of(encoding));
+                    x.setStdoutFile(stdoutFile);
+                    x.setStdoutSink(() -> stdout);
+                    x.setFileSink(fileSinkOf(gzipped));
 
-                        output.writeString(regularFile, "hello");
-                        assertThat(read(regularFile, encoding, gzipped))
-                                .isEqualTo("hello");
+                    x.writeString(stdoutFile, "hello");
+                    x.writeString(stdoutFile, " world");
+                    assertThat(stdout.toString(UTF_8.name()))
+                            .isEqualTo("hello world");
 
-                        output.writeString(regularFile, " world");
-                        assertThat(read(regularFile, encoding, gzipped))
-                                .isEqualTo(append ? "hello world" : " world");
+                    x.writeString(notStdinFile, " world");
+                    assertThat(read(notStdinFile, encoding, gzipped))
+                            .isEqualTo(append ? ("notStdinFile world") : " world");
 
-                        Files.delete(regularFile);
-                    }
+                    x.writeString(regularFile, " regularContent");
+                    assertThat(read(regularFile, encoding, gzipped))
+                            .isEqualTo(append ? ("regularFile regularContent") : " regularContent");
+
+                    x.writeString(missingFile, " missingContent");
+                    assertThat(read(missingFile, encoding, gzipped))
+                            .isEqualTo(" missingContent");
+
+                    x.writeString(emptyFile, " emptyContent");
+                    assertThat(read(emptyFile, encoding, gzipped))
+                            .isEqualTo(" emptyContent");
+
+                    x.writeString(nonExistentFile, " nonExistentContent");
+                    assertThat(read(nonExistentFile, encoding, gzipped))
+                            .isEqualTo(" nonExistentContent");
                 }
             }
         }

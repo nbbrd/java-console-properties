@@ -1,14 +1,12 @@
 package nbbrd.console.picocli.text;
 
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -39,63 +37,60 @@ public class TextInputTest {
     }
 
     @Test
-    public void testNewCharReaderOfFile() throws IOException {
-        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            MockedTextInput input = new MockedTextInput();
-            input.setStdInStream(null);
-            input.setFile(fs.getPath("/file.txt"));
+    public void testNewCharReaderOfFile(@TempDir Path temp) throws IOException {
+        MockedTextInput input = new MockedTextInput();
+        input.setStdInStream(null);
+        input.setFile(temp.resolve("file.txt"));
 
-            for (boolean gzipped : BOOLEANS) {
-                for (Charset encoding : CHARSETS) {
-                    input.setGzipped(gzipped);
-                    input.setEncoding(encoding);
-                    input.setStdInEncoding(null);
+        for (boolean gzipped : BOOLEANS) {
+            for (Charset encoding : CHARSETS) {
+                input.setGzipped(gzipped);
+                input.setEncoding(encoding);
+                input.setStdInEncoding(null);
 
-                    assertThatIOException()
-                            .describedAs("Missing file should throw IOException")
-                            .isThrownBy(input::newCharReader);
+                assertThatIOException()
+                        .describedAs("Missing file should throw IOException")
+                        .isThrownBy(input::newCharReader);
 
-                    write(input.getFile(), encoding, gzipped, "hello");
-                    assertThat(input.readString())
-                            .describedAs("Valid file should return valid content")
-                            .isEqualTo("hello");
+                write(input.getFile(), encoding, gzipped, "hello");
+                assertThat(input.readString())
+                        .describedAs("Valid file should return valid content")
+                        .isEqualTo("hello");
 
-                    Files.delete(input.getFile());
-                }
+                Files.delete(input.getFile());
             }
         }
     }
 
     @Test
-    public void testIsGzippedFile() throws IOException {
-        try (FileSystem fs = Jimfs.newFileSystem(Configuration.unix())) {
-            MockedTextInput input = new MockedTextInput();
+    public void testIsGzippedFile(@TempDir Path temp) throws IOException {
+        MockedTextInput input = new MockedTextInput();
 
-            input.setGzipped(false);
-            input.setFile(null);
-            assertThat(input.isGzippedFile()).isFalse();
+        input.setGzipped(false);
+        input.setFile(null);
+        assertThat(input.isGzippedFile()).isFalse();
 
-            input.setGzipped(true);
-            input.setFile(null);
-            assertThat(input.isGzippedFile()).isFalse();
+        input.setGzipped(true);
+        input.setFile(null);
+        assertThat(input.isGzippedFile()).isFalse();
 
-            input.setGzipped(false);
-            input.setFile(fs.getPath("/file.txt"));
-            assertThat(input.isGzippedFile()).isFalse();
+        input.setGzipped(false);
+        input.setFile(temp.resolve("file.txt"));
+        assertThat(input.isGzippedFile()).isFalse();
 
-            input.setGzipped(false);
-            input.setFile(fs.getPath("/file.txt.gz"));
-            assertThat(input.isGzippedFile()).isTrue();
+        input.setGzipped(false);
+        input.setFile(temp.resolve("file.txt.gz"));
+        assertThat(input.isGzippedFile()).isTrue();
 
-            input.setGzipped(true);
-            input.setFile(fs.getPath("/file.txt"));
-            assertThat(input.isGzippedFile()).isTrue();
+        input.setGzipped(true);
+        input.setFile(temp.resolve("file.txt"));
+        assertThat(input.isGzippedFile()).isTrue();
 
-            input.setGzipped(true);
-            input.setFile(fs.getPath("/file.txt.gz"));
-            assertThat(input.isGzippedFile()).isTrue();
-        }
+        input.setGzipped(true);
+        input.setFile(temp.resolve("file.txt.gz"));
+        assertThat(input.isGzippedFile()).isTrue();
     }
+
 
     @lombok.Data
     private final static class MockedTextInput implements TextInput {

@@ -5,13 +5,13 @@
 
     <groupId>com.github.nbbrd.java-console-properties</groupId>
     <artifactId>java-console-properties</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 
     <packaging>jar</packaging>
 
     <name>java-console-properties</name>
     <description>Java console properties</description>
-    <url>https://github.com/nbbrd/java-console-properties</url>
+    <url>https://github.com/${x.github.user}/${x.github.repo}</url>
     <inceptionYear>2018</inceptionYear>
 
     <licenses>
@@ -31,10 +31,22 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/nbbrd/java-console-properties.git</connection>
-        <developerConnection>scm:git:ssh://github.com:nbbrd/java-console-properties.git</developerConnection>
-        <url>http://github.com/nbbrd/java-console-properties/tree/master</url>
+        <connection>scm:git:git://github.com/${x.github.user}/${x.github.repo}.git</connection>
+        <developerConnection>scm:git:ssh://github.com:${x.github.user}/${x.github.repo}.git</developerConnection>
+        <url>http://github.com/${x.github.user}/${x.github.repo}/tree/master</url>
     </scm>
+
+    <properties>
+        <!-- Java 8+ config -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.outputTimestamp>2024-04-17T08:20:36Z</project.build.outputTimestamp>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+
+        <!-- GitHub hosting -->
+        <x.github.user>nbbrd</x.github.user>
+        <x.github.repo>java-console-properties</x.github.repo>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -42,7 +54,7 @@
             <dependency>
                 <groupId>com.github.nbbrd.java-io-util</groupId>
                 <artifactId>java-io-bom</artifactId>
-                <version>0.0.19</version>
+                <version>0.0.28</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -50,7 +62,7 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>5.9.1</version>
+                <version>5.10.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -62,7 +74,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.26.0</version>
+            <version>3.42.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -110,13 +122,13 @@
         <dependency>
             <groupId>com.github.nbbrd.picocsv</groupId>
             <artifactId>picocsv</artifactId>
-            <version>2.1.0</version>
+            <version>2.4.0</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.33</version>
+            <version>2.2</version>
             <optional>true</optional>
         </dependency>
 
@@ -129,13 +141,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.23.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.jimfs</groupId>
-            <artifactId>jimfs</artifactId>
-            <version>1.2</version>
+            <version>3.25.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -147,7 +153,7 @@
         <dependency>
             <groupId>io.github.hakky54</groupId>
             <artifactId>consolecaptor</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -159,32 +165,32 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.10.1</version>
+                    <version>3.13.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -194,13 +200,75 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.2.5</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.surefire</groupId>
+                            <artifactId>surefire-junit-platform</artifactId>
+                            <version>3.2.5</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <!-- Other plugins -->
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.6.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.gaul</groupId>
+                    <artifactId>modernizer-maven-plugin</artifactId>
+                    <version>2.7.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>de.thetaphi</groupId>
+                    <artifactId>forbiddenapis</artifactId>
+                    <version>3.7</version>
+                </plugin>
+                <plugin>
                     <groupId>com.github.nbbrd.heylogs</groupId>
                     <artifactId>heylogs-maven-plugin</artifactId>
-                    <version>0.3.2</version>
+                    <version>0.8.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.amashchenko.maven.plugin</groupId>
+                    <artifactId>gitflow-maven-plugin</artifactId>
+                    <version>1.21.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.6.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.simplify4u.plugins</groupId>
+                    <artifactId>sign-maven-plugin</artifactId>
+                    <version>1.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.13</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.12</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jreleaser</groupId>
+                    <artifactId>jreleaser-maven-plugin</artifactId>
+                    <version>1.11.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -213,6 +281,45 @@
                         <id>check-changelog</id>
                         <goals>
                             <goal>check</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <semver>true</semver>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <properties>
+                        <!-- Enable parallel execution of junit5 tests -->
+                        <configurationParameters>
+                            junit.jupiter.execution.parallel.enabled=true
+                            junit.jupiter.execution.parallel.mode.default=concurrent
+                        </configurationParameters>
+                    </properties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>de.thetaphi</groupId>
+                <artifactId>forbiddenapis</artifactId>
+                <configuration>
+                    <failOnUnsupportedJava>false</failOnUnsupportedJava>
+                    <bundledSignatures>
+                        <bundledSignature>jdk-unsafe</bundledSignature>
+                        <bundledSignature>jdk-deprecated</bundledSignature>
+                        <bundledSignature>jdk-internal</bundledSignature>
+                        <bundledSignature>jdk-non-portable</bundledSignature>
+                        <bundledSignature>jdk-reflection</bundledSignature>
+                    </bundledSignatures>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>testCheck</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -229,11 +336,6 @@
                     <name>!skipBaseJava8</name>
                 </property>
             </activation>
-            <properties>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <maven.compiler.target>1.8</maven.compiler.target>
-                <maven.compiler.source>1.8</maven.compiler.source>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -256,10 +358,10 @@
                 </property>
             </activation>
             <properties>
-                <lombok.version>1.18.24</lombok.version>
-                <java-service.version>1.5.1</java-service.version>
-                <java-design.version>1.3.1</java-design.version>
-                <picocli.version>4.6.3</picocli.version>
+                <lombok.version>1.18.32</lombok.version>
+                <java-service.version>1.9.0</java-service.version>
+                <java-design.version>1.5.1</java-design.version>
+                <picocli.version>4.7.5</picocli.version>
             </properties>
             <dependencyManagement>
                 <dependencies>
@@ -418,17 +520,16 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.1.0</version>
                         <dependencies>
                             <dependency>
                                 <groupId>org.kordamp.maven</groupId>
                                 <artifactId>pomchecker-enforcer-rules</artifactId>
-                                <version>1.3.0</version>
+                                <version>1.11.0</version>
                             </dependency>
                             <dependency>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>extra-enforcer-rules</artifactId>
-                                <version>1.6.1</version>
+                                <version>1.8.0</version>
                             </dependency>
                         </dependencies>
                         <executions>
@@ -439,18 +540,30 @@
                                 </goals>
                                 <configuration>
                                     <rules>
+                                        <!-- Built-In Rules -->
+                                        <banDuplicatePomDependencyVersions/>
+                                        <dependencyConvergence/>
+                                        <reactorModuleConvergence/>
                                         <requireMavenVersion>
                                             <version>3.6.0</version>
                                         </requireMavenVersion>
-                                        <DependencyConvergence/>
+                                        <requireNoRepositories>
+                                            <allowSnapshotRepositories>true</allowSnapshotRepositories>
+                                        </requireNoRepositories>
+                                        <requirePluginVersions/>
                                         <requireReleaseDeps>
                                             <onlyWhenRelease>true</onlyWhenRelease>
                                         </requireReleaseDeps>
-                                        <CheckMavenCentral
+                                        <requireUpperBoundDeps/>
+                                        <!-- pomchecker-enforcer-rules -->
+                                        <checkMavenCentral
                                                 implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
                                             <release>false</release>
                                             <strict>false</strict>
-                                        </CheckMavenCentral>
+                                        </checkMavenCentral>
+                                        <!-- extra-enforcer-rules -->
+                                        <banCircularDependencies/>
+                                        <banDuplicateClasses/>
                                         <enforceBytecodeVersion>
                                             <maxJdkVersion>8</maxJdkVersion>
                                             <ignoredScopes>
@@ -479,7 +592,6 @@
                     <plugin>
                         <groupId>org.gaul</groupId>
                         <artifactId>modernizer-maven-plugin</artifactId>
-                        <version>2.4.0</version>
                         <configuration>
                             <javaVersion>1.8</javaVersion>
                         </configuration>
@@ -511,7 +623,6 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.8</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -544,7 +655,6 @@
                     <plugin>
                         <groupId>com.amashchenko.maven.plugin</groupId>
                         <artifactId>gitflow-maven-plugin</artifactId>
-                        <version>1.19.0</version>
                         <configuration>
                             <gitFlowConfig>
                                 <versionTagPrefix>v</versionTagPrefix>
@@ -563,7 +673,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -576,7 +685,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.4.1</version>
                         <executions>
                             <execution>
                                 <id>attach-empty-javadocs</id>
@@ -593,7 +701,6 @@
                     <plugin>
                         <groupId>org.simplify4u.plugins</groupId>
                         <artifactId>sign-maven-plugin</artifactId>
-                        <version>1.0.1</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -620,7 +727,6 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
@@ -646,7 +752,6 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
@@ -680,7 +785,6 @@
                     <plugin>
                         <groupId>org.jreleaser</groupId>
                         <artifactId>jreleaser-maven-plugin</artifactId>
-                        <version>1.2.0</version>
                         <executions>
                             <execution>
                                 <phase>install</phase>
