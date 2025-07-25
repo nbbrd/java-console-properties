@@ -1,8 +1,8 @@
 package nbbrd.console.picocli;
 
 import nbbrd.io.sys.SystemProperties;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URISyntaxException;
 import java.net.URL;

@@ -6,8 +6,8 @@ import nbbrd.design.ThreadSafe;
 import nbbrd.design.VisibleForTesting;
 import nbbrd.io.sys.OS;
 import nbbrd.io.win.RegWrapper;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

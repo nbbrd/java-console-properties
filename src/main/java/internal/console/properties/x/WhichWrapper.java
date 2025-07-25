@@ -1,6 +1,6 @@
 package internal.console.properties.x;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import lombok.NonNull;
 
 import java.io.IOException;
 

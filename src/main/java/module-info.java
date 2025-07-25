@@ -18,7 +18,7 @@
 module nbbrd.console.properties {
     requires static lombok;
     requires static nbbrd.service;
-    requires static org.checkerframework.checker.qual;
+    requires static org.jspecify;
     requires static nbbrd.design;
 
     // optional dependencies

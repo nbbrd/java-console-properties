@@ -3,7 +3,7 @@ package nbbrd.console.picocli;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
 import nbbrd.service.ServiceId;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import lombok.NonNull;
 
 public interface Profile {
 

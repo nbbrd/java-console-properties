@@ -23,8 +23,8 @@ import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
 import nbbrd.service.ServiceFilter;
 import nbbrd.service.ServiceSorter;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.Charset;
 import java.util.List;
