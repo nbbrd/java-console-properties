@@ -18,12 +18,12 @@ package nbbrd.console.properties;
 
 import internal.console.properties.ConsolePropertiesSpiLoader;
 import internal.console.properties.FailsafeConsolePropertiesSpi;
+import lombok.NonNull;
 import nbbrd.design.ThreadSafe;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
 import nbbrd.service.ServiceFilter;
 import nbbrd.service.ServiceSorter;
-import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.Charset;
@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * This class allows to retrieve some console properties such as size and
@@ -51,7 +53,7 @@ public final class ConsoleProperties {
     public static ConsoleProperties ofServiceLoader() {
         return ConsoleProperties
                 .builder()
-                .providers(new ConsolePropertiesSpiLoader().get())
+                .providers(ConsolePropertiesSpiLoader.load().stream().map(FailsafeConsolePropertiesSpi::wrap).collect(toList()))
                 .build();
     }
 
@@ -121,8 +123,7 @@ public final class ConsoleProperties {
     @ThreadSafe
     @ServiceDefinition(
             loaderName = "internal.console.properties.ConsolePropertiesSpiLoader",
-            quantifier = Quantifier.MULTIPLE,
-            wrapper = FailsafeConsolePropertiesSpi.class
+            quantifier = Quantifier.MULTIPLE
     )
     public interface Spi {
 
