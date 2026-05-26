@@ -25,10 +25,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -62,7 +59,7 @@ public interface MultiFileInput {
                 throw ex.getCause();
             }
         }
-        Collections.sort(result);
+        result.sort(Comparator.naturalOrder());
         return result;
     }
 
