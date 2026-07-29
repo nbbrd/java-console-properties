@@ -81,7 +81,7 @@ public class ExcelCsvTest {
     }
 
     private static File createSource(ExcelCsv excel) throws IOException {
-        File result = File.createTempFile("source", ".csv");
+        File result = Files.createTempFile("source", ".csv").toFile();
         result.deleteOnExit();
 
         String A1 = "Some text";
@@ -110,7 +110,7 @@ public class ExcelCsvTest {
     }
 
     private static File createTarget(File source) throws IOException, PowerShellExecutionException {
-        File result = File.createTempFile("target", ".csv");
+        File result = Files.createTempFile("target", ".csv").toFile();
         result.deleteOnExit();
 
         try (PowerShell ps = PowerShell.open()) {
